@@ -8,6 +8,17 @@ import 'package:tiefprompt/core/constants.dart';
 import 'package:tiefprompt/providers/feature_provider.dart';
 import 'package:tiefprompt/providers/settings_provider.dart';
 
+/// 设置屏幕（主设置页）
+///
+/// 显示应用的主要设置选项：
+/// - 语言选择
+/// - 显示设置（链接到详细页面）
+/// - 文本设置（链接到详细页面）
+/// - 主题模式（亮色/暗色/跟随系统）
+/// - 颜色设置（主题色、提词器背景色、文字颜色）
+/// - 滚动速度
+/// - 倒计时时长
+/// - 重置设置按钮
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -123,6 +134,14 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
+/// 显示设置屏幕
+///
+/// 提词器显示相关的详细设置：
+/// - X/Y轴镜像（水平/垂直翻转）
+/// - 阅读指示框（辅助线）及其高度
+/// - 垂直边距框及其高度
+/// - 边距框渐变效果及长度
+/// - 文本左右边距
 class DisplaySettingsScreen extends ConsumerWidget {
   const DisplaySettingsScreen({super.key});
 
@@ -323,6 +342,12 @@ class DisplaySettingsScreen extends ConsumerWidget {
   }
 }
 
+/// 文本设置屏幕
+///
+/// 提词器文本相关的详细设置：
+/// - 字体家族选择（Roboto、OpenDyslexic等）
+/// - 字体大小
+/// - 文本对齐方式（左对齐、居中、右对齐）
 class TextSettingsScreen extends ConsumerWidget {
   const TextSettingsScreen({super.key});
 

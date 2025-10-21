@@ -8,7 +8,12 @@ part of 'script_provider.dart';
 
 String _$scriptHash() => r'3a79ed8411129b00579d4cddbc2d4c075294c293';
 
-/// See also [Script].
+/// 稿件状态管理器
+///
+/// 使用 @riverpod 注解生成 Provider
+/// 管理当前编辑的稿件内容和标题
+///
+/// Copied from [Script].
 @ProviderFor(Script)
 final scriptProvider =
     AutoDisposeNotifierProvider<Script, ScriptState>.internal(

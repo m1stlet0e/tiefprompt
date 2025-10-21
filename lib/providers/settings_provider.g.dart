@@ -8,7 +8,13 @@ part of 'settings_provider.dart';
 
 String _$settingsHash() => r'6d2bb2b6f04888dad3f380ff1e9690a5c2688baa';
 
-/// See also [Settings].
+/// 设置管理器
+///
+/// 负责加载、保存和管理所有用户设置
+/// - keepAlive: true 表示这个Provider会一直存在，不会被自动释放
+/// - 使用 SharedPreferences 持久化存储
+///
+/// Copied from [Settings].
 @ProviderFor(Settings)
 final settingsProvider =
     AsyncNotifierProvider<Settings, SettingsState>.internal(

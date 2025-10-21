@@ -12,6 +12,13 @@ import 'package:tiefprompt/providers/script_provider.dart';
 import 'package:tiefprompt/services/script_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// 主页屏幕
+///
+/// 应用的主界面，包含以下功能：
+/// - 稿件输入框：输入或粘贴提词器稿件
+/// - 已保存稿件列表：显示数据库中的所有稿件
+/// - 功能按钮：打开文件、进入提词器、设置等
+/// - 侧边抽屉：关于信息、许可证、购买专业版等
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,7 +27,11 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  /// 稿件输入框控制器
   late TextEditingController _controller;
+  
+  /// 稿件Provider的监听订阅
+  /// 用于同步Provider状态到输入框
   ProviderSubscription? _scriptListener;
 
   @override
@@ -29,15 +40,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _controller = TextEditingController();
   }
 
+  /// 当依赖的Provider变化时调用
+  ///
+  /// 这里设置监听器，将稿件Provider的文本同步到输入框
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    // 关闭旧的监听器（如果存在）
     _scriptListener?.close();
+    
+    // 监听稿件Provider的变化
     _scriptListener = ref.listenManual(scriptProvider, (previous, next) {
+      // 当稿件文本变化时，更新输入框内容
+      // 但要避免在用户正在输入时更新（检查composing状态）
       if (previous?.text != next.text &&
           _controller.text != next.text &&
           !_controller.value.composing.isValid) {
+        // 将光标移到末尾
         final selection = TextSelection.collapsed(offset: next.text.length);
         _controller.value = TextEditingValue(
           text: next.text,
@@ -54,8 +74,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
+  /// 构建主页界面
   @override
   Widget build(BuildContext context) {
+    // 注册字体许可证，用于"关于"页面显示
     LicenseRegistry.addLicense(() async* {
       final openDyslexicLicense = await rootBundle.loadString(
         'assets/licenses/openDyslexicLicense.txt',
@@ -75,10 +97,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       yield LicenseEntryWithLineBreaks(['roboto slab'], robotoSlabLicense);
     });
 
+    // 获取应用包信息（版本号等）
     Future<PackageInfo> packageInfo = PackageInfo.fromPlatform();
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.tr("title"))),
+      appBar: AppBar(title: Text(context.tr("title"))),  // 应用标题（国际化）
       body: SingleChildScrollView(
         child: Column(
           children: [

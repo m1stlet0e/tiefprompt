@@ -8,7 +8,15 @@ part of 'prompter_provider.dart';
 
 String _$prompterHash() => r'75597ba71abf45a4ea29a411d89531479872aede';
 
-/// See also [Prompter].
+/// 提词器状态管理器
+///
+/// 管理提词器的实时状态，包括：
+/// - 播放/暂停控制
+/// - 速度、字体大小调整
+/// - 镜像、对齐等显示设置
+/// - 倒计时功能
+///
+/// Copied from [Prompter].
 @ProviderFor(Prompter)
 final prompterProvider =
     AutoDisposeNotifierProvider<Prompter, PrompterState>.internal(

@@ -6,9 +6,17 @@ part of 'feature_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$featuresHash() => r'34e97c8e52f752d74be1432bb2e764821c05a811';
+String _$featuresHash() => r'b2bedd4ebf3bfbcae2b01dffe957b51cd3935aae';
 
-/// See also [Features].
+/// 功能特性管理器（基类）
+///
+/// 这是一个抽象类，定义了功能管理的接口
+/// 实际实现由以下子类提供：
+/// - FeaturesUnverified: 未验证构建（开发时使用）
+/// - FeaturesFoss: FOSS免费版
+/// - FeaturesFreemium: Freemium付费版
+///
+/// Copied from [Features].
 @ProviderFor(Features)
 final featuresProvider =
     AutoDisposeNotifierProvider<Features, AppFeatures>.internal(

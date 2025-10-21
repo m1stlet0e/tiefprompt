@@ -129,9 +129,16 @@ class $ScriptModelTable extends ScriptModel
 }
 
 class ScriptModelData extends DataClass implements Insertable<ScriptModelData> {
+  /// 主键 ID，自动递增
   final int id;
+
+  /// 稿件标题
   final String title;
+
+  /// 稿件正文内容
   final String scriptText;
+
+  /// 创建时间
   final DateTime createdAt;
   const ScriptModelData({
     required this.id,

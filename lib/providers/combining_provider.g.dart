@@ -36,16 +36,68 @@ abstract class _$CombinedAsyncData
   AsyncValue<CombinedState> build(List<AsyncValue<Object>> states);
 }
 
-/// See also [CombinedAsyncData].
+/// 异步数据组合器
+///
+/// 用于等待多个异步Provider全部加载完成
+///
+/// **使用场景**：
+/// 当一个Widget依赖多个异步Provider时（如主题、设置、路由），
+/// 需要等待它们全部加载完成后才能渲染界面
+///
+/// **状态合并规则**：
+/// - 如果有任何一个还在加载中 → 返回 AsyncValue.loading()
+/// - 如果有任何一个出错 → 返回第一个错误
+/// - 如果全部成功 → 返回合并后的数据
+///
+/// Copied from [CombinedAsyncData].
 @ProviderFor(CombinedAsyncData)
 const combinedAsyncDataProvider = CombinedAsyncDataFamily();
 
-/// See also [CombinedAsyncData].
+/// 异步数据组合器
+///
+/// 用于等待多个异步Provider全部加载完成
+///
+/// **使用场景**：
+/// 当一个Widget依赖多个异步Provider时（如主题、设置、路由），
+/// 需要等待它们全部加载完成后才能渲染界面
+///
+/// **状态合并规则**：
+/// - 如果有任何一个还在加载中 → 返回 AsyncValue.loading()
+/// - 如果有任何一个出错 → 返回第一个错误
+/// - 如果全部成功 → 返回合并后的数据
+///
+/// Copied from [CombinedAsyncData].
 class CombinedAsyncDataFamily extends Family<AsyncValue<CombinedState>> {
-  /// See also [CombinedAsyncData].
+  /// 异步数据组合器
+  ///
+  /// 用于等待多个异步Provider全部加载完成
+  ///
+  /// **使用场景**：
+  /// 当一个Widget依赖多个异步Provider时（如主题、设置、路由），
+  /// 需要等待它们全部加载完成后才能渲染界面
+  ///
+  /// **状态合并规则**：
+  /// - 如果有任何一个还在加载中 → 返回 AsyncValue.loading()
+  /// - 如果有任何一个出错 → 返回第一个错误
+  /// - 如果全部成功 → 返回合并后的数据
+  ///
+  /// Copied from [CombinedAsyncData].
   const CombinedAsyncDataFamily();
 
-  /// See also [CombinedAsyncData].
+  /// 异步数据组合器
+  ///
+  /// 用于等待多个异步Provider全部加载完成
+  ///
+  /// **使用场景**：
+  /// 当一个Widget依赖多个异步Provider时（如主题、设置、路由），
+  /// 需要等待它们全部加载完成后才能渲染界面
+  ///
+  /// **状态合并规则**：
+  /// - 如果有任何一个还在加载中 → 返回 AsyncValue.loading()
+  /// - 如果有任何一个出错 → 返回第一个错误
+  /// - 如果全部成功 → 返回合并后的数据
+  ///
+  /// Copied from [CombinedAsyncData].
   CombinedAsyncDataProvider call(List<AsyncValue<Object>> states) {
     return CombinedAsyncDataProvider(states);
   }
@@ -72,14 +124,40 @@ class CombinedAsyncDataFamily extends Family<AsyncValue<CombinedState>> {
   String? get name => r'combinedAsyncDataProvider';
 }
 
-/// See also [CombinedAsyncData].
+/// 异步数据组合器
+///
+/// 用于等待多个异步Provider全部加载完成
+///
+/// **使用场景**：
+/// 当一个Widget依赖多个异步Provider时（如主题、设置、路由），
+/// 需要等待它们全部加载完成后才能渲染界面
+///
+/// **状态合并规则**：
+/// - 如果有任何一个还在加载中 → 返回 AsyncValue.loading()
+/// - 如果有任何一个出错 → 返回第一个错误
+/// - 如果全部成功 → 返回合并后的数据
+///
+/// Copied from [CombinedAsyncData].
 class CombinedAsyncDataProvider
     extends
         AutoDisposeNotifierProviderImpl<
           CombinedAsyncData,
           AsyncValue<CombinedState>
         > {
-  /// See also [CombinedAsyncData].
+  /// 异步数据组合器
+  ///
+  /// 用于等待多个异步Provider全部加载完成
+  ///
+  /// **使用场景**：
+  /// 当一个Widget依赖多个异步Provider时（如主题、设置、路由），
+  /// 需要等待它们全部加载完成后才能渲染界面
+  ///
+  /// **状态合并规则**：
+  /// - 如果有任何一个还在加载中 → 返回 AsyncValue.loading()
+  /// - 如果有任何一个出错 → 返回第一个错误
+  /// - 如果全部成功 → 返回合并后的数据
+  ///
+  /// Copied from [CombinedAsyncData].
   CombinedAsyncDataProvider(List<AsyncValue<Object>> states)
     : this._internal(
         () => CombinedAsyncData()..states = states,

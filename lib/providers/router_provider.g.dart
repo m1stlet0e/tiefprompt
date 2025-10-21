@@ -6,9 +6,15 @@ part of 'router_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$tiefPromptRouterHash() => r'564507b34f77679732943fc395ebd8cd6b01d1d7';
+String _$tiefPromptRouterHash() => r'53152d3d937ec19adda5ea5ddc8f3479d883f632';
 
-/// See also [TiefPromptRouter].
+/// 路由配置管理器
+///
+/// 使用 GoRouter 管理应用的所有页面路由
+/// - keepAlive: true 保证路由配置在应用生命周期内一直存在
+/// - 依赖 Themes Provider，用于为提词器页面应用专用主题
+///
+/// Copied from [TiefPromptRouter].
 @ProviderFor(TiefPromptRouter)
 final tiefPromptRouterProvider =
     NotifierProvider<TiefPromptRouter, GoRouter>.internal(

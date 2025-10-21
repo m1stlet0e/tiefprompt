@@ -14,7 +14,24 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SettingsState {
 
- double get scrollSpeed; bool get mirroredX; bool get mirroredY; double get fontSize; double get sideMargin; String get fontFamily; TextAlign get alignment; bool get displayReadingIndicatorBoxes; double get readingIndicatorBoxesHeight; bool get displayVerticalMarginBoxes; double get verticalMarginBoxesHeight; bool get verticalMarginBoxesFadeEnabled; double get verticalMarginBoxesFadeLength; double get countdownDuration; ThemeMode get themeMode; Color get appPrimaryColor; Color get prompterBackgroundColor; Color get prompterTextColor;
+ double get scrollSpeed;// 默认滚动速度
+ bool get mirroredX;// 默认不镜像X轴
+ bool get mirroredY;// 默认不镜像Y轴
+ double get fontSize;// 默认字体大小42点
+ double get sideMargin;// 默认侧边距0%
+ String get fontFamily;// 默认字体Roboto
+ TextAlign get alignment;// 默认左对齐
+ bool get displayReadingIndicatorBoxes;// 默认不显示助读区
+ double get readingIndicatorBoxesHeight;// 助读区高度60%
+ bool get displayVerticalMarginBoxes;// 默认不显示遮罩
+ double get verticalMarginBoxesHeight;// 遮罩高度35%
+ bool get verticalMarginBoxesFadeEnabled;// 默认不启用渐变
+ double get verticalMarginBoxesFadeLength;// 渐变长度50%
+ double get countdownDuration;// 默认倒计时0秒（不倒计时）
+ ThemeMode get themeMode;// 默认跟随系统主题
+ Color get appPrimaryColor;// 应用主题色
+ Color get prompterBackgroundColor;// 提词器背景黑色
+ Color get prompterTextColor;
 /// Create a copy of SettingsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -227,22 +244,39 @@ class _SettingsState implements SettingsState {
   
 
 @override@JsonKey() final  double scrollSpeed;
+// 默认滚动速度
 @override@JsonKey() final  bool mirroredX;
+// 默认不镜像X轴
 @override@JsonKey() final  bool mirroredY;
+// 默认不镜像Y轴
 @override@JsonKey() final  double fontSize;
+// 默认字体大小42点
 @override@JsonKey() final  double sideMargin;
+// 默认侧边距0%
 @override@JsonKey() final  String fontFamily;
+// 默认字体Roboto
 @override@JsonKey() final  TextAlign alignment;
+// 默认左对齐
 @override@JsonKey() final  bool displayReadingIndicatorBoxes;
+// 默认不显示助读区
 @override@JsonKey() final  double readingIndicatorBoxesHeight;
+// 助读区高度60%
 @override@JsonKey() final  bool displayVerticalMarginBoxes;
+// 默认不显示遮罩
 @override@JsonKey() final  double verticalMarginBoxesHeight;
+// 遮罩高度35%
 @override@JsonKey() final  bool verticalMarginBoxesFadeEnabled;
+// 默认不启用渐变
 @override@JsonKey() final  double verticalMarginBoxesFadeLength;
+// 渐变长度50%
 @override@JsonKey() final  double countdownDuration;
+// 默认倒计时0秒（不倒计时）
 @override@JsonKey() final  ThemeMode themeMode;
+// 默认跟随系统主题
 @override@JsonKey() final  Color appPrimaryColor;
+// 应用主题色
 @override@JsonKey() final  Color prompterBackgroundColor;
+// 提词器背景黑色
 @override@JsonKey() final  Color prompterTextColor;
 
 /// Create a copy of SettingsState

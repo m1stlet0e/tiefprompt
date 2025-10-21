@@ -8,7 +8,13 @@ part of 'theme_provider.dart';
 
 String _$themesHash() => r'2b2057a7d63c98f454e3e1ec7480cc390ee3f987';
 
-/// See also [Themes].
+/// 主题管理器
+///
+/// 根据用户设置的颜色动态生成应用主题
+/// - 依赖 Settings Provider，当颜色设置变化时自动重新构建
+/// - keepAlive: true 保证主题始终在内存中
+///
+/// Copied from [Themes].
 @ProviderFor(Themes)
 final themesProvider = AsyncNotifierProvider<Themes, ThemesState>.internal(
   Themes.new,

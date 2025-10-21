@@ -7,12 +7,34 @@ import 'package:tiefprompt/providers/prompter_provider.dart';
 import 'package:tiefprompt/providers/settings_provider.dart';
 import 'package:tiefprompt/providers/theme_provider.dart';
 
+/// 字体设置对话框可见性Provider
 final fontSettingsVisibleProvider = StateProvider<bool>((ref) => false);
+
+/// 显示设置对话框可见性Provider
 final displaySettingsVisibleProvider = StateProvider<bool>((ref) => false);
 
+/// 提词器底部控制栏
+///
+/// 显示在提词器界面的底部，包含所有主要控制按钮：
+/// - 保存设置：将当前提词器配置保存为默认设置
+/// - 显示设置：镜像、辅助线、边距等
+/// - 播放控制：播放/暂停、速度调节
+/// - 文本格式：字体、大小、对齐方式
+/// - 设置：跳转到完整设置页面
+///
+/// **右下角信息**：
+/// - 显示当前速度
+/// - 显示当前字体大小
+///
+/// **弹出对话框**：
+/// - _FontSettingsDialog: 文本格式设置
+/// - _DisplaySettingsDialog: 显示设置
 class PrompterBottomBar extends ConsumerWidget {
   const PrompterBottomBar({super.key});
 
+  /// 获取所有控制按钮的Widget列表
+  ///
+  /// 返回一个Row Widget列表，每个Row包含相关的按钮组
   List<Widget> _getWidgetButtons(
     BuildContext context,
     WidgetRef ref,
@@ -193,6 +215,12 @@ class PrompterBottomBar extends ConsumerWidget {
   }
 }
 
+/// 字体设置对话框（内部组件）
+///
+/// 显示在提词器界面右侧，用于快速调整文本格式：
+/// - 字体大小调节
+/// - 文本对齐方式（左、中、右、两端对齐）
+/// - 字体家族选择（Roboto、OpenDyslexic等）
 class _FontSettingsDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -324,6 +352,15 @@ class _FontSettingsDialog extends ConsumerWidget {
   }
 }
 
+/// 显示设置对话框（内部组件）
+///
+/// 显示在提词器界面左侧，用于快速调整显示效果：
+/// - X/Y轴镜像（水平/垂直翻转）
+/// - 阅读指示框及其高度
+/// - 垂直边距框及其高度
+/// - 边距框渐变效果及渐变长度
+/// - 文本左右边距
+/// - 倒计时时长
 class _DisplaySettingsDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

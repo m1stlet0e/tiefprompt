@@ -14,7 +14,22 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PrompterState {
 
- double get speed; bool get mirroredX; bool get mirroredY; double get fontSize; bool get isPlaying; double get sideMargin; String get fontFamily; TextAlign get alignment; bool get displayReadingIndicatorBoxes; double get readingIndicatorBoxesHeight; bool get displayVerticalMarginBoxes; double get verticalMarginBoxesHeight; double get countdownDuration; bool get displayCountdown; bool get verticalMarginBoxesFadeEnabled; double get verticalMarginBoxesFadeLength;
+ double get speed;// 滚动速度（行/秒）
+ bool get mirroredX;// X轴镜像（水平翻转）
+ bool get mirroredY;// Y轴镜像（垂直翻转）
+ double get fontSize;// 字体大小（点）
+ bool get isPlaying;// 是否正在播放
+ double get sideMargin;// 侧边距（百分比）
+ String get fontFamily;// 字体系列
+ TextAlign get alignment;// 文本对齐方式
+ bool get displayReadingIndicatorBoxes;// 是否显示助读区
+ double get readingIndicatorBoxesHeight;// 助读区高度（百分比）
+ bool get displayVerticalMarginBoxes;// 是否显示垂直遮罩
+ double get verticalMarginBoxesHeight;// 遮罩高度（百分比）
+ double get countdownDuration;// 倒计时时长（秒）
+ bool get displayCountdown;// 是否显示倒计时
+ bool get verticalMarginBoxesFadeEnabled;// 是否启用遮罩渐变
+ double get verticalMarginBoxesFadeLength;
 /// Create a copy of PrompterState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -225,20 +240,35 @@ class _PrompterState implements PrompterState {
   
 
 @override@JsonKey() final  double speed;
+// 滚动速度（行/秒）
 @override@JsonKey() final  bool mirroredX;
+// X轴镜像（水平翻转）
 @override@JsonKey() final  bool mirroredY;
+// Y轴镜像（垂直翻转）
 @override@JsonKey() final  double fontSize;
+// 字体大小（点）
 @override@JsonKey() final  bool isPlaying;
+// 是否正在播放
 @override@JsonKey() final  double sideMargin;
+// 侧边距（百分比）
 @override@JsonKey() final  String fontFamily;
+// 字体系列
 @override@JsonKey() final  TextAlign alignment;
+// 文本对齐方式
 @override@JsonKey() final  bool displayReadingIndicatorBoxes;
+// 是否显示助读区
 @override@JsonKey() final  double readingIndicatorBoxesHeight;
+// 助读区高度（百分比）
 @override@JsonKey() final  bool displayVerticalMarginBoxes;
+// 是否显示垂直遮罩
 @override@JsonKey() final  double verticalMarginBoxesHeight;
+// 遮罩高度（百分比）
 @override@JsonKey() final  double countdownDuration;
+// 倒计时时长（秒）
 @override@JsonKey() final  bool displayCountdown;
+// 是否显示倒计时
 @override@JsonKey() final  bool verticalMarginBoxesFadeEnabled;
+// 是否启用遮罩渐变
 @override@JsonKey() final  double verticalMarginBoxesFadeLength;
 
 /// Create a copy of PrompterState
