@@ -15,6 +15,7 @@
         "IconButton_Settings": "提词器设置",
         "IconButton_SourceCode": "进作者的Github看看",
         "IconButton_About": "关于此软件",
+        "IconButton_Profile": "我的账户",
         "BottomSheet": {
             "Text_Title": "保存提词",
             "TextField_hintText": "起一个好记的提词名称",
@@ -30,6 +31,13 @@
         "PaidVersion_Explanation": "感谢你购买了 TiefPrompt 专业版！你的支持意义重大。你不仅仅是在解锁额外功能 - 你正在帮助这个项目活跃、保持维护，并希望随时间推移变得更好。这个应用是一项热爱的工作，你的贡献有助于覆盖托管、开发、测试设备和太多咖啡。\n\n真的，感谢你让这一切成为可能。",
         "BuyPro": "购买专业版",
         "Understood": "我知道了"
+    },
+    "ProfileScreen": {
+        "title": "我的账户",
+        "welcome_message": "欢迎回来",
+        "future_login_feature": "后续将支持登录和账户管理功能",
+        "more_options": "更多选项",
+        "privacy_policy": "隐私政策"
     },
     "SettingsScreen": {
         "title": "提词器设置",

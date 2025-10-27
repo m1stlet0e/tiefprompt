@@ -6,6 +6,7 @@ import 'package:tiefprompt/ui/screens/home_screen.dart';
 import 'package:tiefprompt/ui/screens/open_file_screen.dart';
 import 'package:tiefprompt/ui/screens/prompter_screen.dart';
 import 'package:tiefprompt/ui/screens/settings_screen.dart';
+import 'package:tiefprompt/ui/screens/profile_screen.dart';
 import 'package:tiefprompt/ui/widgets/banner_listener.dart';
 
 part 'router_provider.g.dart';
@@ -76,6 +77,12 @@ class TiefPromptRouter extends _$TiefPromptRouter {
                   const BannerListener(child: TextSettingsScreen()),
             ),
           ],
+        ),
+        // 个人资料页面
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) =>
+              const BannerListener(child: ProfileScreen()),
         ),
       ],
     );

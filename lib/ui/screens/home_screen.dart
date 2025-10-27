@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tiefprompt/core/constants.dart';
 import 'package:tiefprompt/providers/feature_provider.dart';
 import 'package:tiefprompt/providers/prompter_provider.dart';
 import 'package:tiefprompt/providers/script_provider.dart';
 import 'package:tiefprompt/services/script_service.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// 主页屏幕
 ///
@@ -72,11 +70,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _scriptListener?.close();
     _controller.dispose();
     super.dispose();
-  }
-
-  /// 获取应用包信息（版本号等）
-  Future<PackageInfo> _getPackageInfo() {
-    return PackageInfo.fromPlatform();
   }
 
   @override
@@ -483,80 +476,68 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     ),
                   ),
-                  // 底部区域
+                  // 底部导航区域 - 简洁紧凑
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                      horizontal: 20.0,
+                      vertical: 12.0,
+                      horizontal: 24.0,
                     ),
-                    child: Column(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _BuildVersionNote(),
-                        const SizedBox(height: 12),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildIconButton(
-                                context,
-                                icon: Icons.settings_outlined,
-                                label: context.tr("HomeScreen.IconButton_Settings"),
-                                onPressed: () => context.push("/settings"),
-                              ),
-                              const SizedBox(width: 12),
-                              _buildIconButton(
-                                context,
-                                icon: Icons.code_outlined,
-                                label: context.tr("HomeScreen.IconButton_SourceCode"),
-                                onPressed: () => _launchUrl(
-                                  "https://github.com/tiefseetauchner/tiefprompt",
+                        // 设置按钮
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => context.push("/settings"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF5E7CE2).withOpacity(0.1),
+                              foregroundColor: Color(0xFF5E7CE2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(
+                                  color: Color(0xFF5E7CE2).withOpacity(0.3),
+                                  width: 1.5,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              FutureBuilder<PackageInfo>(
-                                future: _getPackageInfo(),
-                                builder: (buildContext, snapshot) => _buildIconButton(
-                                  context,
-                                  icon: Icons.info_outline,
-                                  label: context.tr("HomeScreen.IconButton_About"),
-                                  onPressed: () => showAboutDialog(
-                                    context: context,
-                                    applicationName: context.tr("title"),
-                                    applicationLegalese:
-                                        "${context.tr("copyright")}\n${context.tr("credits")}",
-                                    applicationVersion:
-                                        "${snapshot.data?.version} (Build ${snapshot.data?.buildNumber})",
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.all(16),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              context.tr(
-                                                "AboutDialog.Text_PrivacyText",
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            ElevatedButton(
-                                              onPressed: () => _launchUrl(
-                                                "https://www.lukechriswalker.at/projects/fe5a26d763326489020000a4",
-                                              ),
-                                              child: Text(
-                                                context.tr(
-                                                  "AboutDialog.ElevatedButton_Privacy",
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              elevation: 0,
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            icon: Icon(Icons.settings_outlined, size: 18),
+                            label: Text(
+                              context.tr("HomeScreen.IconButton_Settings"),
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // 个人账户按钮
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => context.push("/profile"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF5E7CE2).withOpacity(0.1),
+                              foregroundColor: Color(0xFF5E7CE2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(
+                                  color: Color(0xFF5E7CE2).withOpacity(0.3),
+                                  width: 1.5,
                                 ),
                               ),
-                            ],
+                              elevation: 0,
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            icon: Icon(Icons.person_outline, size: 18),
+                            label: Text(
+                              context.tr("HomeScreen.IconButton_Profile"),
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -569,143 +550,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _launchUrl(String uri) async {
-    final Uri url = Uri.parse(uri);
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
-  /// 构建高级图标按钮
-  Widget _buildIconButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    final theme = Theme.of(context);
-
-    return Tooltip(
-      message: label,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(12),
-          splashColor: Color(0xFF5E7CE2).withOpacity(0.1),
-          highlightColor: Color(0xFF5E7CE2).withOpacity(0.05),
-          child: Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Color(0xFFA0AEC0).withOpacity(0.2),
-                width: 1.5,
-              ),
-            ),
-            child: Icon(
-              icon,
-              size: 22,
-              color: Color(0xFFA0AEC0),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BuildVersionNote extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final appFeatures = ref.watch(featuresProvider);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (dialogContext) {
-                return AlertDialog(
-                  title: Text(
-                    context.tr(switch (appFeatures.featureKind) {
-                      FeatureKind.fossVersion => "HomeScreen.FossVersion",
-                      FeatureKind.freeVersion => "HomeScreen.FreeVersion",
-                      FeatureKind.paidVersion => "HomeScreen.PaidVersion",
-                      FeatureKind.unverifiedBuild =>
-                        "HomeScreen.UnverifiedBuild",
-                    }),
-                    style: TextStyle(
-                      color:
-                          appFeatures.featureKind == FeatureKind.unverifiedBuild
-                          ? Colors.red
-                          : null,
-                    ),
-                  ),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 10,
-                      children: [
-                        Text(
-                          context.tr(switch (appFeatures.featureKind) {
-                            FeatureKind.fossVersion =>
-                              "HomeScreen.FossVersion_Explanation",
-                            FeatureKind.freeVersion =>
-                              "HomeScreen.FreeVersion_Explanation",
-                            FeatureKind.paidVersion =>
-                              "HomeScreen.PaidVersion_Explanation",
-                            FeatureKind.unverifiedBuild =>
-                              "HomeScreen.UnverifiedBuild_Explanation",
-                          }),
-                        ),
-                        if (appFeatures.featureKind == FeatureKind.freeVersion)
-                          ElevatedButton(
-                            onPressed: () =>
-                                ref.watch(featuresProvider.notifier).buyPro(),
-                            child: Text("Buy the Pro Version"),
-                          ),
-                        ElevatedButton(
-                          onPressed: () => _launchUrl(
-                            "https://github.com/Tiefseetauchner/tiefprompt",
-                          ),
-                          child: Text(
-                            "https://github.com/Tiefseetauchner/tiefprompt",
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => dialogContext.pop(),
-                      child: Text(context.tr("HomeScreen.Understood")),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          child: Text(
-            context.tr(switch (appFeatures.featureKind) {
-              FeatureKind.fossVersion => "HomeScreen.FossVersion",
-              FeatureKind.freeVersion => "HomeScreen.FreeVersion",
-              FeatureKind.paidVersion => "HomeScreen.PaidVersion",
-              FeatureKind.unverifiedBuild => "HomeScreen.UnverifiedBuild",
-            }),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _launchUrl(String uri) async {
-    final Uri url = Uri.parse(uri);
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
-    }
   }
 }
