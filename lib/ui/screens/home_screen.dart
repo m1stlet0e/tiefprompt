@@ -245,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide(
-                                    color: Color(0xFF5E7CE2),
+                                    color: theme.primaryColor,
                                     width: 2,
                                   ),
                                 ),
@@ -275,7 +275,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Color(0xFF5E7CE2).withOpacity(0.25),
+                                  color: theme.primaryColor.withOpacity(0.25),
                                   blurRadius: 20,
                                   offset: Offset(0, 8),
                                 ),
@@ -287,7 +287,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 context.push('/teleprompter');
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF5E7CE2),
+                                backgroundColor: theme.primaryColor,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
@@ -422,7 +422,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                       focusedBorder: OutlineInputBorder(
                                                         borderRadius: BorderRadius.circular(12),
                                                         borderSide: BorderSide(
-                                                          color: Color(0xFF5E7CE2),
+                                                          color: theme.primaryColor,
                                                           width: 2,
                                                         ),
                                                       ),
@@ -450,7 +450,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                         dialogContext.pop();
                                                       },
                                                       style: ElevatedButton.styleFrom(
-                                                        backgroundColor: Color(0xFF5E7CE2),
+                                                        backgroundColor: theme.primaryColor,
                                                         foregroundColor: Colors.white,
                                                         shape: RoundedRectangleBorder(
                                                           borderRadius: BorderRadius.circular(12),

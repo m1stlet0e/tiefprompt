@@ -85,11 +85,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 48,
-                          backgroundColor: Color(0xFF5E7CE2).withOpacity(0.1),
+                          backgroundColor: theme.primaryColor.withOpacity(0.1),
                           child: Icon(
                             Icons.person,
                             size: 48,
-                            color: Color(0xFF5E7CE2),
+                            color: theme.primaryColor,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -140,6 +140,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       icon: Icons.info_outline,
                       title: context.tr("HomeScreen.IconButton_About"),
                       onTap: () => _showAboutDialog(context),
+                      theme: theme,
                     ),
                     const SizedBox(height: 8),
                     _buildQuickLink(
@@ -148,6 +149,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       onTap: () => _launchUrl(
                         "https://www.lukechriswalker.at/projects/fe5a26d763326489020000a4",
                       ),
+                      theme: theme,
                     ),
                   ],
                 ),
@@ -166,6 +168,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    required ThemeData theme,
   }) {
     return Material(
       color: Colors.transparent,
@@ -179,7 +182,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Icon(
                 icon,
                 size: 20,
-                color: Color(0xFF5E7CE2),
+                color: theme.primaryColor,
               ),
               const SizedBox(width: 12),
               Expanded(
