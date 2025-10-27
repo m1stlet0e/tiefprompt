@@ -74,7 +74,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  /// 构建主页界面
+  /// 获取应用包信息（版本号等）
+  Future<PackageInfo> _getPackageInfo() {
+    return PackageInfo.fromPlatform();
+  }
+
   @override
   Widget build(BuildContext context) {
     // 注册字体许可证，用于"关于"页面显示
@@ -97,186 +101,466 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       yield LicenseEntryWithLineBreaks(['roboto slab'], robotoSlabLicense);
     });
 
-    // 获取应用包信息（版本号等）
-    Future<PackageInfo> packageInfo = PackageInfo.fromPlatform();
+    // 获取主题色
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.tr("title"))),  // 应用标题（国际化）
-      body: SingleChildScrollView(
-        child: Column(
+      // 高级品牌化 AppBar
+      appBar: AppBar(
+        title: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: context.tr("HomeScreen.TextField_hintText"),
-                    ),
-                    // textInputAction: TextInputAction.newline,
-                    maxLines: (MediaQuery.of(context).size.height / 70).floor(),
-                    controller: _controller,
-                    onChanged: (value) {
-                      ref.read(scriptProvider.notifier).setText(value);
-                    },
+            Text(
+              context.tr("title"),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 22,
+                letterSpacing: -0.5,
+              ),
+            ),
+            // 品牌 Slogan
+            Text(
+              "专注你的表达",
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
+                color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+        elevation: 0,
+        toolbarHeight: 72,
+      ),
+      // 高级渐变背景 + 品牌纹理
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? [
+                    theme.scaffoldBackgroundColor,
+                    theme.scaffoldBackgroundColor,
+                  ]
+                : [
+                    Color(0xFFFAFBFF),
+                    Color(0xFFF0F4FF),
+                  ],
+          ),
+        ),
+        // 添加品牌水印纹理
+        child: Stack(
+          children: [
+            // 品牌水印
+            if (!isDark)
+              Positioned(
+                top: 80,
+                right: -50,
+                child: Opacity(
+                  opacity: 0.03,
+                  child: Icon(
+                    Icons.mic,
+                    size: 280,
+                    color: theme.primaryColor,
                   ),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 16,
-                    runSpacing: 16,
-                    direction: Axis.horizontal,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          ref.invalidate(prompterProvider);
-                          context.push('/teleprompter');
-                        },
-                        child: Text(
-                          context.tr("HomeScreen.ElevatedButton_Start"),
+                ),
+              ),
+            // 主内容
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: MediaQuery.of(context).padding.top * 0.5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // 高级输入框
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 16,
+                                spreadRadius: 2,
+                                offset: Offset(0, 4),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(isDark ? 0 : 0.8),
+                                blurRadius: 4,
+                                offset: Offset(0, -1),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            keyboardType: TextInputType.multiline,
+                            style: TextStyle(
+                              fontSize: 16,
+                              height: 1.75,
+                              color: Color(0xFF2D3748),
+                            ),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: theme.cardColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: theme.dividerColor.withOpacity(0.08),
+                                  width: 1,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: Color(0xFF5E7CE2),
+                                  width: 2,
+                                ),
+                              ),
+                              hintText: context.tr("HomeScreen.TextField_hintText"),
+                              hintStyle: TextStyle(
+                                color: Color(0xFFA0AEC0),
+                                fontSize: 15,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 20,
+                              ),
+                            ),
+                            maxLines: (MediaQuery.of(context).size.height / 70).floor(),
+                            controller: _controller,
+                            onChanged: (value) {
+                              ref.read(scriptProvider.notifier).setText(value);
+                            },
+                          ),
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.push('/open_file');
-                        },
-                        child: Text(
-                          context.tr("HomeScreen.ElevatedButton_Select"),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (dialogContext) {
-                              return SafeArea(
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(
-                                    16.0,
-                                    16.0,
-                                    16.0,
-                                    MediaQuery.of(context).viewInsets.bottom +
-                                        16.0,
+                        const SizedBox(height: 48),
+                        // 高级按钮布局
+                        Column(
+                          children: [
+                            // 主按钮
+                            Container(
+                              width: double.infinity,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0xFF5E7CE2).withOpacity(0.25),
+                                    blurRadius: 20,
+                                    offset: Offset(0, 8),
                                   ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        context.tr(
-                                          "HomeScreen.BottomSheet.Text_Title",
-                                        ),
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  ref.invalidate(prompterProvider);
+                                  context.push('/teleprompter');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF5E7CE2),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 0,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      context.tr("HomeScreen.ElevatedButton_Start"),
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.3,
                                       ),
-                                      TextField(
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          hintText: context.tr(
-                                            "HomeScreen.BottomSheet.TextField_hintText",
-                                          ),
-                                        ),
-                                        onChanged: (value) => ref
-                                            .read(scriptProvider.notifier)
-                                            .setTitle(value),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.arrow_forward_rounded, size: 20),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            // 次要按钮
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      context.push('/open_file');
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Color(0xFF4A5568),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
                                       ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          ScriptService().save(
-                                            ref.watch(scriptProvider),
+                                    ),
+                                    icon: Icon(
+                                      Icons.folder_open_outlined,
+                                      size: 18,
+                                      color: Color(0xFFA0AEC0),
+                                    ),
+                                    label: Text(
+                                      context.tr("HomeScreen.ElevatedButton_Select"),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                    child: VerticalDivider(
+                                      color: Color(0xFFA0AEC0).withOpacity(0.3),
+                                      thickness: 1,
+                                    ),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (dialogContext) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              color: theme.scaffoldBackgroundColor,
+                                              borderRadius: BorderRadius.vertical(
+                                                top: Radius.circular(24),
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black.withOpacity(0.15),
+                                                  blurRadius: 20,
+                                                  offset: Offset(0, -4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: SafeArea(
+                                              child: Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                  24.0,
+                                                  28.0,
+                                                  24.0,
+                                                  MediaQuery.of(context).viewInsets.bottom + 24.0,
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Center(
+                                                      child: Container(
+                                                        width: 40,
+                                                        height: 4,
+                                                        margin: EdgeInsets.only(bottom: 20),
+                                                        decoration: BoxDecoration(
+                                                          color: Color(0xFFA0AEC0).withOpacity(0.3),
+                                                          borderRadius: BorderRadius.circular(2),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      context.tr("HomeScreen.BottomSheet.Text_Title"),
+                                                      style: TextStyle(
+                                                        fontSize: 22,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: Color(0xFF2D3748),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 20),
+                                                    TextField(
+                                                      autofocus: true,
+                                                      decoration: InputDecoration(
+                                                        filled: true,
+                                                        fillColor: theme.cardColor,
+                                                        border: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          borderSide: BorderSide.none,
+                                                        ),
+                                                        enabledBorder: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          borderSide: BorderSide(
+                                                            color: Color(0xFFA0AEC0).withOpacity(0.2),
+                                                            width: 1,
+                                                          ),
+                                                        ),
+                                                        focusedBorder: OutlineInputBorder(
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          borderSide: BorderSide(
+                                                            color: Color(0xFF5E7CE2),
+                                                            width: 2,
+                                                          ),
+                                                        ),
+                                                        hintText: context.tr(
+                                                          "HomeScreen.BottomSheet.TextField_hintText",
+                                                        ),
+                                                        hintStyle: TextStyle(
+                                                          color: Color(0xFFA0AEC0),
+                                                        ),
+                                                        contentPadding: EdgeInsets.all(16),
+                                                      ),
+                                                      onChanged: (value) => ref
+                                                          .read(scriptProvider.notifier)
+                                                          .setTitle(value),
+                                                    ),
+                                                    const SizedBox(height: 20),
+                                                    SizedBox(
+                                                      width: double.infinity,
+                                                      height: 52,
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          ScriptService().save(
+                                                            ref.watch(scriptProvider),
+                                                          );
+                                                          dialogContext.pop();
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Color(0xFF5E7CE2),
+                                                          foregroundColor: Colors.white,
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(12),
+                                                          ),
+                                                          elevation: 0,
+                                                        ),
+                                                        child: Text(
+                                                          context.tr(
+                                                            "HomeScreen.BottomSheet.ElevatedButton_Save",
+                                                          ),
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight: FontWeight.w600,
+                                                            letterSpacing: 0.3,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           );
-                                          dialogContext.pop();
                                         },
-                                        child: Text(
-                                          context.tr(
-                                            "HomeScreen.BottomSheet.ElevatedButton_Save",
-                                          ),
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Color(0xFF4A5568),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                    ),
+                                    icon: Icon(
+                                      Icons.save_outlined,
+                                      size: 18,
+                                      color: Color(0xFFA0AEC0),
+                                    ),
+                                    label: Text(
+                                      context.tr('HomeScreen.ElevatedButton_Save'),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  // 底部区域
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16.0,
+                      horizontal: 20.0,
+                    ),
+                    child: Column(
+                      children: [
+                        _BuildVersionNote(),
+                        const SizedBox(height: 12),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildIconButton(
+                                context,
+                                icon: Icons.settings_outlined,
+                                label: context.tr("HomeScreen.IconButton_Settings"),
+                                onPressed: () => context.push("/settings"),
+                              ),
+                              const SizedBox(width: 12),
+                              _buildIconButton(
+                                context,
+                                icon: Icons.code_outlined,
+                                label: context.tr("HomeScreen.IconButton_SourceCode"),
+                                onPressed: () => _launchUrl(
+                                  "https://github.com/tiefseetauchner/tiefprompt",
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              FutureBuilder<PackageInfo>(
+                                future: _getPackageInfo(),
+                                builder: (buildContext, snapshot) => _buildIconButton(
+                                  context,
+                                  icon: Icons.info_outline,
+                                  label: context.tr("HomeScreen.IconButton_About"),
+                                  onPressed: () => showAboutDialog(
+                                    context: context,
+                                    applicationName: context.tr("title"),
+                                    applicationLegalese:
+                                        "${context.tr("copyright")}\n${context.tr("credits")}",
+                                    applicationVersion:
+                                        "${snapshot.data?.version} (Build ${snapshot.data?.buildNumber})",
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(16),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              context.tr(
+                                                "AboutDialog.Text_PrivacyText",
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            ElevatedButton(
+                                              onPressed: () => _launchUrl(
+                                                "https://www.lukechriswalker.at/projects/fe5a26d763326489020000a4",
+                                              ),
+                                              child: Text(
+                                                context.tr(
+                                                  "AboutDialog.ElevatedButton_Privacy",
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              );
-                            },
-                          );
-                        },
-                        child: Text(
-                          context.tr('HomeScreen.ElevatedButton_Save'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 12.0,
-                horizontal: 16.0,
-              ),
-              child: Column(
-                spacing: 8.0,
-                children: [
-                  _BuildVersionNote(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.settings),
-                        onPressed: () => context.push("/settings"),
-                        tooltip: context.tr("HomeScreen.IconButton_Settings"),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.code),
-                        onPressed: () => _launchUrl(
-                          "https://github.com/tiefseetauchner/tiefprompt",
-                        ),
-                        tooltip: context.tr("HomeScreen.IconButton_SourceCode"),
-                      ),
-                      FutureBuilder(
-                        future: packageInfo,
-                        builder: (buildContext, packageInfo) => IconButton(
-                          icon: Icon(Icons.info),
-                          tooltip: context.tr("HomeScreen.IconButton_About"),
-                          onPressed: () => showAboutDialog(
-                            context: context,
-                            applicationName: context.tr("title"),
-                            applicationLegalese:
-                                "${context.tr("copyright")}\n${context.tr("credits")}",
-                            applicationVersion:
-                                "${packageInfo.data?.version} (Build ${packageInfo.data?.buildNumber})",
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 8,
-                                  children: [
-                                    Text(
-                                      context.tr(
-                                        "AboutDialog.Text_PrivacyText",
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () => _launchUrl(
-                                        "https://www.lukechriswalker.at/projects/fe5a26d763326489020000a4",
-                                      ),
-                                      child: Text(
-                                        context.tr(
-                                          "AboutDialog.ElevatedButton_Privacy",
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -292,6 +576,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (!await launchUrl(url)) {
       throw Exception('Could not launch $url');
     }
+  }
+
+  /// 构建高级图标按钮
+  Widget _buildIconButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    final theme = Theme.of(context);
+
+    return Tooltip(
+      message: label,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          splashColor: Color(0xFF5E7CE2).withOpacity(0.1),
+          highlightColor: Color(0xFF5E7CE2).withOpacity(0.05),
+          child: Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Color(0xFFA0AEC0).withOpacity(0.2),
+                width: 1.5,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 22,
+              color: Color(0xFFA0AEC0),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

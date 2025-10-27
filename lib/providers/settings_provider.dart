@@ -9,8 +9,9 @@ import 'package:tiefprompt/providers/prompter_provider.dart';
 part 'settings_provider.freezed.dart'; // Freezed 生成
 part 'settings_provider.g.dart';       // Riverpod 生成
 
-/// 默认应用主题色（蓝色）
-const _defaultAppPrimaryColor = Color.fromARGB(255, 77, 103, 214);
+/// 默认应用主题色（优化后的品牌蓝 - 降低饱和度，增加亲和力）
+/// 从 #4D67D6 (77, 103, 214) 优化为 #5E7CE2 (94, 124, 226)
+const _defaultAppPrimaryColor = Color.fromARGB(255, 94, 124, 226);
 
 /// 用户设置状态数据类
 /// 
