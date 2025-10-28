@@ -50,7 +50,7 @@ class _TeleprompterAppState extends ConsumerState<TeleprompterApp> {
     );
     
     // 监听路由配置
-    final router = ref.watch(tiefPromptRouterProvider);
+    final router = ref.watch(promptifyRouterProvider);
     
     // 监听亮色主题
     final lightTheme = ref.watch(

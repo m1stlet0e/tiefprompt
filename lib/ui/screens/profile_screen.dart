@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/auth_provider.dart';
 import 'package:promptify/providers/feature_provider.dart';
+import 'package:promptify/ui/screens/login_screen.dart';
+import 'package:promptify/ui/screens/payment_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// 个人资料页面
@@ -13,7 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 /// - 用户头像和欢迎信息
 /// - 应用版本信息
 /// - 快速访问链接（关于、源代码、隐私政策）
-/// - 未来将添加：用户登录、订阅管理等
+/// - 用户登录、订阅管理
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -31,6 +34,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    
+    // 监听认证状态
+    final userAsync = ref.watch(currentUserProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -46,162 +52,206 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         elevation: 0,
         toolbarHeight: 56,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark
-                ? [
-                    theme.scaffoldBackgroundColor,
-                    theme.scaffoldBackgroundColor,
-                  ]
-                : [
-                    Color(0xFFFAFBFF),
-                    Color(0xFFF0F4FF),
-                  ],
-          ),
+      body: userAsync.when(
+        data: (user) {
+          if (user == null) {
+            // 未登录状态
+            return _buildUnAuthenticatedView(context, theme);
+          } else {
+            // 已登录状态
+            return _buildAuthenticatedView(context, theme, user);
+          }
+        },
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+      ),
+    );
+  }
+
+  /// 未登录视图
+  Widget _buildUnAuthenticatedView(BuildContext context, ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: theme.brightness == Brightness.dark
+              ? [
+                  theme.scaffoldBackgroundColor,
+                  theme.scaffoldBackgroundColor,
+                ]
+              : [
+                  Color(0xFFFAFBFF),
+                  Color(0xFFF0F4FF),
+                ],
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 24),
-              
-              // 用户信息卡片
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Card(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(
-                      color: theme.dividerColor.withOpacity(0.08),
-                      width: 1,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 48,
-                          backgroundColor: theme.primaryColor.withOpacity(0.1),
-                          child: Icon(
-                            Icons.person,
-                            size: 48,
-                            color: theme.primaryColor,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          context.tr("ProfileScreen.welcome_message"),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2D3748),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        FutureBuilder<PackageInfo>(
-                          future: _getPackageInfo(),
-                          builder: (context, snapshot) => Text(
-                            "v${snapshot.data?.version ?? 'unknown'}",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFFA0AEC0),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // 快速链接
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.tr("ProfileScreen.more_options"),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFA0AEC0),
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildQuickLink(
-                      icon: Icons.info_outline,
-                      title: context.tr("HomeScreen.IconButton_About"),
-                      onTap: () => _showAboutDialog(context),
-                      theme: theme,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildQuickLink(
-                      icon: Icons.privacy_tip_outlined,
-                      title: context.tr("ProfileScreen.privacy_policy"),
-                      onTap: () => _launchUrl(
-                        "https://www.lukechriswalker.at/projects/fe5a26d763326489020000a4",
-                      ),
-                      theme: theme,
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 32),
-            ],
-          ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.person_outline, size: 80, color: theme.primaryColor),
+            SizedBox(height: 24),
+            Text('你还未登录', style: theme.textTheme.headlineSmall),
+            SizedBox(height: 12),
+            Text('登录后可享受更多功能'),
+            SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              },
+              icon: Icon(Icons.login),
+              label: Text('立即登录'),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  /// 构建快速链接按钮
-  Widget _buildQuickLink({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    required ThemeData theme,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: theme.primaryColor,
+  /// 已登录视图
+  Widget _buildAuthenticatedView(
+    BuildContext context,
+    ThemeData theme,
+    dynamic user,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: theme.brightness == Brightness.dark
+              ? [
+                  theme.scaffoldBackgroundColor,
+                  theme.scaffoldBackgroundColor,
+                ]
+              : [
+                  Color(0xFFFAFBFF),
+                  Color(0xFFF0F4FF),
+                ],
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            // 用户信息卡片
+            Container(
+              margin: EdgeInsets.all(16),
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [theme.primaryColor, theme.primaryColor.withOpacity(0.8)],
+                ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white.withOpacity(0.3),
+                    child: Icon(Icons.person, size: 40, color: Colors.white),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    user.nickname ?? 'User',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    user.phone ?? 'No phone',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // 会员状态
+            ListTile(
+              title: Text('会员状态'),
+              trailing: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: user.isPaidUser ? Colors.green : Colors.grey,
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Text(
-                  title,
+                  user.isPaidUser ? '专业版' : '免费版',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF2D3748),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                size: 18,
-                color: Color(0xFFA0AEC0),
+            ),
+            
+            // 升级到专业版
+            if (!user.isPaidUser)
+              ListTile(
+                title: Text('升级专业版'),
+                subtitle: Text('解锁所有高级功能'),
+                trailing: Icon(Icons.arrow_forward),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PaymentScreen()),
+                  );
+                },
               ),
-            ],
-          ),
+            
+            Divider(),
+            
+            // 快速链接
+            ListTile(
+              title: Text('关于应用'),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () => _showAboutDialog(context),
+            ),
+            
+            ListTile(
+              title: Text('隐私政策'),
+              trailing: Icon(Icons.arrow_forward),
+              onTap: () => _launchUrl(
+                "https://www.lukechriswalker.at/projects/fe5a26d763326489020000a4",
+              ),
+            ),
+            
+            Divider(),
+            
+            // 登出按钮
+            ListTile(
+              title: Text('登出'),
+              trailing: Icon(Icons.logout),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('确认登出？'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('取消'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          ref.read(currentUserProvider.notifier).logout();
+                          Navigator.pop(context);
+                        },
+                        child: Text('登出'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

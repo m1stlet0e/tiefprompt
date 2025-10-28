@@ -6,7 +6,7 @@ part of 'router_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$tiefPromptRouterHash() => r'53152d3d937ec19adda5ea5ddc8f3479d883f632';
+String _$promptifyRouterHash() => r'3332f1f5382bbdb46dde546c60d6cbcaf164d3ef';
 
 /// 路由配置管理器
 ///
@@ -16,13 +16,13 @@ String _$tiefPromptRouterHash() => r'53152d3d937ec19adda5ea5ddc8f3479d883f632';
 ///
 /// Copied from [PromptifyRouter].
 @ProviderFor(PromptifyRouter)
-final tiefPromptRouterProvider =
+final promptifyRouterProvider =
     NotifierProvider<PromptifyRouter, GoRouter>.internal(
       PromptifyRouter.new,
-      name: r'tiefPromptRouterProvider',
+      name: r'promptifyRouterProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$tiefPromptRouterHash,
+          : _$promptifyRouterHash,
       dependencies: <ProviderOrFamily>[themesProvider],
       allTransitiveDependencies: <ProviderOrFamily>{
         themesProvider,

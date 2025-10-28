@@ -49,6 +49,28 @@ dependencies:
   in_app_purchase: ^3.2.3
   in_app_purchase_android: ^0.4.0+2
 
+  # ============ 新增：认证和支付依赖 ============
+  # 微信支付和登录
+  # wechat_sdk: ^4.0.0  # 暂时注释，需要原生集成
+  
+  # 支付宝支付和登录
+  # alipay_flutter: ^1.0.0  # 暂时注释，需要原生集成
+  
+  # 手机号相关
+  sms_autofill: ^2.3.0
+  phone_number: ^1.0.0
+  intl_phone_number_input: ^0.7.0
+  
+  # 网络请求
+  dio: ^5.4.0
+  
+  # 加密和存储
+  flutter_secure_storage: ^9.0.0
+  
+  # 其他工具
+  uuid: ^4.0.0
+  cached_network_image: ^3.3.0
+
 dev_dependencies:
   integration_test:
     sdk: flutter
@@ -70,7 +92,7 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/images/icon-1024x1024.png"
+  image_path: "assets/images/image.png"
   min_sdk_android: 21
   windows:
     generate: true
