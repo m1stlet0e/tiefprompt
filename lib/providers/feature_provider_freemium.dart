@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/app_features.dart';
-import 'package:tiefprompt/providers/banner_provider.dart';
-import 'package:tiefprompt/providers/feature_provider.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/app_features.dart';
+import 'package:promptify/providers/banner_provider.dart';
+import 'package:promptify/providers/feature_provider.dart';
 
 /// Freemium版功能特性管理器
 ///

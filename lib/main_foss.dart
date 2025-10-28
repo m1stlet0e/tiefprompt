@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart' as el;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/feature_provider.dart';
-import 'package:tiefprompt/providers/feature_provider_foss.dart';
-import 'package:tiefprompt/teleprompter_app.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/feature_provider.dart';
+import 'package:promptify/providers/feature_provider_foss.dart';
+import 'package:promptify/teleprompter_app.dart';
 
 // ==================== FOSS版主入口文件 ====================
 //

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:tiefprompt/models/script_model.dart';
+import 'package:promptify/models/script_model.dart';
 
 // 这个 part 指令告诉 Dart 这个文件的生成代码在 database.g.dart 中
 part 'database.g.dart';

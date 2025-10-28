@@ -4,7 +4,7 @@
 
 ✅ **所有代码文件已全部添加详细中文注释！**
 
-本次任务为 TiefPrompt 项目的所有核心代码文件添加了全面的中文注释，包括类、方法、字段、重要逻辑等。注释风格遵循 Dart 文档注释标准，使用 `///` 进行公共API文档化。
+本次任务为 Promptify 项目的所有核心代码文件添加了全面的中文注释，包括类、方法、字段、重要逻辑等。注释风格遵循 Dart 文档注释标准，使用 `///` 进行公共API文档化。
 
 ---
 
@@ -247,6 +247,6 @@
 ---
 
 **报告生成时间**: 2025-10-21  
-**项目**: TiefPrompt (git@github.com:Tiefseetauchner/tiefprompt.git)  
+**项目**: Promptify (git@github.com:Tiefseetauchner/tiefprompt.git)  
 **许可证**: MIT  
 

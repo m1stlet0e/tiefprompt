@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/feature_provider.dart';
-import 'package:tiefprompt/providers/prompter_provider.dart';
-import 'package:tiefprompt/providers/script_provider.dart';
-import 'package:tiefprompt/services/script_service.dart';
-import 'package:tiefprompt/ui/screens/profile_screen.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/feature_provider.dart';
+import 'package:promptify/providers/prompter_provider.dart';
+import 'package:promptify/providers/script_provider.dart';
+import 'package:promptify/services/script_service.dart';
+import 'package:promptify/ui/screens/profile_screen.dart';
 
 /// 主页屏幕
 ///

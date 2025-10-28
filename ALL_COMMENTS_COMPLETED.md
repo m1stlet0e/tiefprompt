@@ -298,7 +298,7 @@
 ---
 
 **完成时间**: 2025-10-21  
-**项目**: TiefPrompt (Teleprompter App)  
+**项目**: Promptify (Teleprompter App)  
 **许可证**: MIT  
 **原作者**: Tiefseetauchner  
 **仓库**: git@github.com:Tiefseetauchner/tiefprompt.git  

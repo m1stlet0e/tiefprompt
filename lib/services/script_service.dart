@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tiefprompt/models/database.dart';
-import 'package:tiefprompt/providers/script_provider.dart';
+import 'package:promptify/models/database.dart';
+import 'package:promptify/providers/script_provider.dart';
 
 // 生成的代码文件
 part 'script_service.g.dart';

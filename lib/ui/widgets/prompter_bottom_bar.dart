@@ -2,10 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/prompter_provider.dart';
-import 'package:tiefprompt/providers/settings_provider.dart';
-import 'package:tiefprompt/providers/theme_provider.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/prompter_provider.dart';
+import 'package:promptify/providers/settings_provider.dart';
+import 'package:promptify/providers/theme_provider.dart';
 
 /// 字体设置对话框可见性Provider
 final fontSettingsVisibleProvider = StateProvider<bool>((ref) => false);

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tiefprompt/providers/theme_provider.dart';
-import 'package:tiefprompt/ui/screens/home_screen.dart';
-import 'package:tiefprompt/ui/screens/open_file_screen.dart';
-import 'package:tiefprompt/ui/screens/prompter_screen.dart';
-import 'package:tiefprompt/ui/screens/settings_screen.dart';
-import 'package:tiefprompt/ui/screens/profile_screen.dart';
-import 'package:tiefprompt/ui/widgets/banner_listener.dart';
+import 'package:promptify/providers/theme_provider.dart';
+import 'package:promptify/ui/screens/home_screen.dart';
+import 'package:promptify/ui/screens/open_file_screen.dart';
+import 'package:promptify/ui/screens/prompter_screen.dart';
+import 'package:promptify/ui/screens/settings_screen.dart';
+import 'package:promptify/ui/screens/profile_screen.dart';
+import 'package:promptify/ui/widgets/banner_listener.dart';
 
 part 'router_provider.g.dart';
 
@@ -17,7 +17,7 @@ part 'router_provider.g.dart';
 /// - keepAlive: true 保证路由配置在应用生命周期内一直存在
 /// - 依赖 Themes Provider，用于为提词器页面应用专用主题
 @Riverpod(keepAlive: true, dependencies: [Themes])
-class TiefPromptRouter extends _$TiefPromptRouter {
+class PromptifyRouter extends _$PromptifyRouter {
   /// 构建路由配置
   ///
   /// 定义应用的所有页面路径和对应的 Widget

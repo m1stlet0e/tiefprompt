@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/settings_provider.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/settings_provider.dart';
 
 // 生成的代码文件
 part 'prompter_provider.freezed.dart'; // Freezed 生成的不可变数据类

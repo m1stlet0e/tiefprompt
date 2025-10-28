@@ -1,4 +1,4 @@
-# TiefPrompt 深度代码解析
+# Promptify 深度代码解析
 
 ## 📖 核心组件深度剖析
 
@@ -174,7 +174,7 @@ _ticker = createTicker((elapsed) {
 
 ```dart
 @Riverpod(keepAlive: true, dependencies: [Themes])
-class TiefPromptRouter extends _$TiefPromptRouter {
+class PromptifyRouter extends _$PromptifyRouter {
   @override
   GoRouter build() {
     return GoRouter(

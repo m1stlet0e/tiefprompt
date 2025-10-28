@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tiefprompt/providers/script_provider.dart';
+import 'package:promptify/providers/script_provider.dart';
 
 /// 提词器顶部控制栏
 ///

@@ -8,7 +8,7 @@ CYAN=$'\033[0;36m'
 RESET=$'\033[0;0m'
 
 info() {
-  echo -e "${GREEN}Build TiefPrompt packages.${RESET}"
+  echo -e "${GREEN}Build Promptify packages.${RESET}"
 
   usage
 }

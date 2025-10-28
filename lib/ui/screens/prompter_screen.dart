@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tiefprompt/providers/prompter_provider.dart';
-import 'package:tiefprompt/providers/settings_provider.dart';
-import 'package:tiefprompt/ui/widgets/countdown_timer.dart';
-import 'package:tiefprompt/ui/widgets/prompter_bottom_bar.dart';
-import 'package:tiefprompt/ui/widgets/prompter_top_bar.dart';
-import 'package:tiefprompt/ui/widgets/vertical_margin.dart';
-import 'package:tiefprompt/ui/widgets/scrollable_text.dart';
-import 'package:tiefprompt/providers/script_provider.dart';
+import 'package:promptify/providers/prompter_provider.dart';
+import 'package:promptify/providers/settings_provider.dart';
+import 'package:promptify/ui/widgets/countdown_timer.dart';
+import 'package:promptify/ui/widgets/prompter_bottom_bar.dart';
+import 'package:promptify/ui/widgets/prompter_top_bar.dart';
+import 'package:promptify/ui/widgets/vertical_margin.dart';
+import 'package:promptify/ui/widgets/scrollable_text.dart';
+import 'package:promptify/providers/script_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// 控制栏可见性Provider

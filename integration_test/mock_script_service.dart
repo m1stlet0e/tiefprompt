@@ -1,5 +1,5 @@
-import 'package:tiefprompt/providers/script_provider.dart';
-import 'package:tiefprompt/services/script_service.dart';
+import 'package:promptify/providers/script_provider.dart';
+import 'package:promptify/services/script_service.dart';
 
 class MockScriptService extends ScriptService {
   @override

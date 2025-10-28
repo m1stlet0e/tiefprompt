@@ -1,4 +1,4 @@
-# TiefPrompt 开发指南
+# Promptify 开发指南
 
 ## 🚀 快速开始
 
@@ -301,7 +301,7 @@ void _tick() {
 // 1. 创建翻译文件
 // assets/translations/ja-JP.json
 {
-  "title": "TiefPrompt プロンプター",
+  "title": "Promptify プロンプター",
   "HomeScreen": {
     "TextField_hintText": "スクリプトを入力",
     // ... 其他翻译

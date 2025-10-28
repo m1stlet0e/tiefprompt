@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/app_features.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/app_features.dart';
 
 part 'feature_provider.g.dart';
 

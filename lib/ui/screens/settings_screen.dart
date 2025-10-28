@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/feature_provider.dart';
-import 'package:tiefprompt/providers/settings_provider.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/feature_provider.dart';
+import 'package:promptify/providers/settings_provider.dart';
 
 /// 设置屏幕（主设置页）
 ///

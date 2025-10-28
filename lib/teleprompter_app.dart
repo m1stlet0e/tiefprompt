@@ -1,11 +1,11 @@
 import 'package:easy_localization/easy_localization.dart' as el;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tiefprompt/providers/combining_provider.dart';
-import 'package:tiefprompt/providers/feature_provider.dart';
-import 'package:tiefprompt/providers/router_provider.dart';
-import 'package:tiefprompt/providers/settings_provider.dart';
-import 'package:tiefprompt/providers/theme_provider.dart';
+import 'package:promptify/providers/combining_provider.dart';
+import 'package:promptify/providers/feature_provider.dart';
+import 'package:promptify/providers/router_provider.dart';
+import 'package:promptify/providers/settings_provider.dart';
+import 'package:promptify/providers/theme_provider.dart';
 
 /// 提词器应用主组件
 /// 

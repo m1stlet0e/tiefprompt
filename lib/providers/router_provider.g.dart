@@ -14,11 +14,11 @@ String _$tiefPromptRouterHash() => r'53152d3d937ec19adda5ea5ddc8f3479d883f632';
 /// - keepAlive: true 保证路由配置在应用生命周期内一直存在
 /// - 依赖 Themes Provider，用于为提词器页面应用专用主题
 ///
-/// Copied from [TiefPromptRouter].
-@ProviderFor(TiefPromptRouter)
+/// Copied from [PromptifyRouter].
+@ProviderFor(PromptifyRouter)
 final tiefPromptRouterProvider =
-    NotifierProvider<TiefPromptRouter, GoRouter>.internal(
-      TiefPromptRouter.new,
+    NotifierProvider<PromptifyRouter, GoRouter>.internal(
+      PromptifyRouter.new,
       name: r'tiefPromptRouterProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
@@ -30,6 +30,6 @@ final tiefPromptRouterProvider =
       },
     );
 
-typedef _$TiefPromptRouter = Notifier<GoRouter>;
+typedef _$PromptifyRouter = Notifier<GoRouter>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,4 +1,4 @@
-# TiefPrompt 项目代码详解
+# Promptify 项目代码详解
 
 ## 📚 目录
 1. [整体架构](#整体架构)
@@ -1000,7 +1000,7 @@ Text(context.tr("PrompterScreen.speed", args: [speed.toString()]))
 
 // zh-CN.json 示例
 {
-  "title": "TiefPrompt 提词器",
+  "title": "Promptify 提词器",
   "HomeScreen": {
     "TextField_hintText": "输入需要提词的稿子",
     "ElevatedButton_Start": "我要读稿了"

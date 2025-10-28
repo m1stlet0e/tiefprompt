@@ -5,8 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tiefprompt/providers/script_provider.dart';
-import 'package:tiefprompt/services/script_service.dart';
+import 'package:promptify/providers/script_provider.dart';
+import 'package:promptify/services/script_service.dart';
 
 /// 打开文件屏幕
 ///

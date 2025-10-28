@@ -1,4 +1,4 @@
-# TiefPrompt
+# Promptify
 
 [![](https://dcbadge.limes.pink/api/server/https://discord.gg/EG3zU9cTFx)](https://discord.gg/EG3zU9cTFx)
 [![Weblate project translated](https://img.shields.io/weblate/progress/tiefprompt?style=for-the-badge)](https://hosted.weblate.org/projects/tiefprompt)
@@ -24,7 +24,7 @@ Or download the latest APK from the [Releases Section](https://github.com/Tiefse
 The `tools/build.sh` script is the easiest way to build the application.
 
 ```bash
-Build TiefPrompt packages.
+Build Promptify packages.
 usage: build.sh [options]
 
 -t target   Comma seperated list of targets to build. Options:

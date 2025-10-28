@@ -1,6 +1,6 @@
-import 'package:tiefprompt/core/constants.dart';
-import 'package:tiefprompt/providers/app_features.dart';
-import 'package:tiefprompt/providers/feature_provider.dart';
+import 'package:promptify/core/constants.dart';
+import 'package:promptify/providers/app_features.dart';
+import 'package:promptify/providers/feature_provider.dart';
 
 /// FOSS版功能特性管理器
 ///

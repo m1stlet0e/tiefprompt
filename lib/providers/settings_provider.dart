@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tiefprompt/providers/prompter_provider.dart';
+import 'package:promptify/providers/prompter_provider.dart';
 
 // 生成的代码文件
 part 'settings_provider.freezed.dart'; // Freezed 生成

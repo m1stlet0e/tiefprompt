@@ -1,4 +1,4 @@
-name: tiefprompt
+name: promptify
 description: "The most simple teleprompter."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -80,7 +80,7 @@ flutter_launcher_icons:
     generate: true
 
 msix_config:
-  display_name: TiefPrompt
+  display_name: Promptify
   publisher_display_name: Tiefseetauchner
   identity_name: io.github.tiefseetauchner.tiefprompt
   msix_version: 1.0.0.0
