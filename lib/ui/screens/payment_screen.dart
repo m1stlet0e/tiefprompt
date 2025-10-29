@@ -106,8 +106,9 @@ class PaymentScreen extends ConsumerWidget {
     final params = PaymentOrderParams(
       userId: user.userId,
       amount: 48.00,
-      method: method,
+      method: method.name,
       productId: 'pro',
+      productName: 'Promptify Pro',
     );
 
     final paymentResult = await ref.read(

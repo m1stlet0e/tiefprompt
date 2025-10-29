@@ -1,10 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:promptify/models/user_model.dart';
 import 'package:promptify/services/auth_service.dart';
+import 'package:promptify/services/wechat_service.dart';
+import 'package:promptify/services/alipay_service.dart';
 
 /// 认证服务提供者
 final authServiceProvider = Provider((ref) {
   return AuthService();
+});
+
+/// 微信服务提供者
+final wechatServiceProvider = Provider((ref) {
+  return WechatService();
+});
+
+/// 支付宝服务提供者
+final alipayServiceProvider = Provider((ref) {
+  return AlipayService();
 });
 
 /// 当前用户状态
@@ -83,19 +95,19 @@ class CurrentUserNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<void> loginWithWeChat() async {
     state = const AsyncValue.loading();
     try {
-      final code = await _authService.getWechatAuthCode();
-      if (code != null) {
-        final response = await _authService.loginWithWeChat(code);
-        if (response != null) {
-          state = AsyncValue.data(response.user);
+      final wechatService = WechatService();
+      final response = await wechatService.login();
+      if (response != null) {
+        final authService = _authService;
+        final loginResponse = await authService.loginWithWeChat(response.code);
+        if (loginResponse != null) {
+          state = AsyncValue.data(loginResponse.user);
         } else {
           state = AsyncValue.error('微信登录失败', StackTrace.current);
         }
       } else {
-        // 演示模式：没有原生SDK时的错误提示
         state = AsyncValue.error(
-          '微信SDK未集成\n需要在原生代码中配置微信SDK\n'
-          '详见项目文档：AUTH_INTEGRATION_GUIDE.md',
+          '微信登录失败\n请确保已获取 App ID 并配置正确',
           StackTrace.current
         );
       }
@@ -108,19 +120,19 @@ class CurrentUserNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<void> loginWithAlipay() async {
     state = const AsyncValue.loading();
     try {
-      final code = await _authService.getAlipayAuthCode();
-      if (code != null) {
-        final response = await _authService.loginWithAlipay(code);
-        if (response != null) {
-          state = AsyncValue.data(response.user);
+      final alipayService = AlipayService();
+      final response = await alipayService.login();
+      if (response != null) {
+        final authService = _authService;
+        final loginResponse = await authService.loginWithAlipay(response.code);
+        if (loginResponse != null) {
+          state = AsyncValue.data(loginResponse.user);
         } else {
           state = AsyncValue.error('支付宝登录失败', StackTrace.current);
         }
       } else {
-        // 演示模式：没有原生SDK时的错误提示
         state = AsyncValue.error(
-          '支付宝SDK未集成\n需要在原生代码中配置支付宝SDK\n'
-          '详见项目文档：AUTH_INTEGRATION_GUIDE.md',
+          '支付宝登录失败\n请确保已获取 App ID 并配置正确',
           StackTrace.current
         );
       }

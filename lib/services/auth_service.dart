@@ -2,27 +2,30 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:promptify/models/user_model.dart';
+import 'package:promptify/core/constants.dart';
 import 'package:uuid/uuid.dart';
 
-/// 认证服务
-/// 处理用户登录、注册、Token 管理等
+/// 认证服务 - 处理用户登录、注册、Token 管理等
 class AuthService {
-  /// 后端 API 基础 URL（需要修改为您的实际地址）
-  static const String _baseUrl = 'https://your-api.example.com/api';
-  
   late final Dio _dio;
   late final FlutterSecureStorage _secureStorage;
   
+  /// Token 过期时间戳
+  DateTime? _tokenExpireTime;
+
   AuthService() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: _baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        baseUrl: ApiEndpoints.baseUrl,
+        connectTimeout: Duration(seconds: AppConfig.httpTimeoutSeconds),
+        receiveTimeout: Duration(seconds: AppConfig.httpTimeoutSeconds),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       ),
     );
     _secureStorage = const FlutterSecureStorage();
-    
+
     // 添加 Token 拦截器
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -33,38 +36,38 @@ class AuthService {
           }
           return handler.next(options);
         },
+        onError: (error, handler) async {
+          // 处理 401 错误（Token 过期）
+          if (error.response?.statusCode == 401) {
+            final success = await refreshToken();
+            if (success) {
+              // 重试原始请求
+              return handler.resolve(await _dio.request(
+                error.requestOptions.path,
+                options: Options(
+                  method: error.requestOptions.method,
+                  headers: error.requestOptions.headers,
+                ),
+              ));
+            }
+          }
+          return handler.next(error);
+        },
       ),
     );
-  }
-
-  /// 发送短信验证码
-  Future<bool> sendSmsCode(String phone) async {
-    try {
-      if (!_isValidPhone(phone)) {
-        throw Exception('Invalid phone number');
-      }
-
-      final response = await _dio.post(
-        '/auth/send-sms',
-        data: {'phone': phone},
-      );
-
-      if (response.statusCode == 200) {
-        print('SMS code sent to $phone');
-        return true;
-      }
-      return false;
-    } catch (e) {
-      print('Error sending SMS: $e');
-      return false;
-    }
   }
 
   /// 手机号 + 密码登录
   Future<LoginResponse?> loginWithPhone(String phone, String password) async {
     try {
+      if (MockConfig.useMockData) {
+        // Mock 数据模式
+        await _simulateNetworkDelay();
+        return _generateMockLoginResponse(phone);
+      }
+
       final response = await _dio.post(
-        '/auth/login-phone',
+        ApiEndpoints.loginPhone,
         data: {
           'phone': phone,
           'password': password,
@@ -76,25 +79,36 @@ class AuthService {
         
         await _saveTokens(loginResp.accessToken, loginResp.refreshToken);
         await _saveUser(loginResp.user);
+        _updateTokenExpireTime();
         
+        _logDebug('✅ 登录成功: $phone');
         return loginResp;
       }
       return null;
     } catch (e) {
-      print('Error logging in with phone: $e');
-      return null;
+      _logDebug('❌ 登录失败: $e');
+      rethrow;
     }
   }
 
-  /// 手机号注册
+  /// 手机号 + 密码注册
   Future<LoginResponse?> registerWithPhone(
     String phone,
     String password,
     String? nickname,
   ) async {
     try {
+      if (MockConfig.useMockData) {
+        // Mock 数据模式
+        await _simulateNetworkDelay();
+        return _generateMockLoginResponse(
+          phone,
+          nickname: nickname ?? 'User_${const Uuid().v4().substring(0, 8)}',
+        );
+      }
+
       final response = await _dio.post(
-        '/auth/register-phone',
+        ApiEndpoints.registerPhone,
         data: {
           'phone': phone,
           'password': password,
@@ -107,33 +121,29 @@ class AuthService {
         
         await _saveTokens(loginResp.accessToken, loginResp.refreshToken);
         await _saveUser(loginResp.user);
+        _updateTokenExpireTime();
         
+        _logDebug('✅ 注册成功: $phone');
         return loginResp;
       }
       return null;
     } catch (e) {
-      print('Error registering with phone: $e');
-      return null;
+      _logDebug('❌ 注册失败: $e');
+      rethrow;
     }
   }
 
-  /// 获取微信登录授权码
-  Future<String?> getWechatAuthCode() async {
-    try {
-      print('获取微信授权码...');
-      // TODO: 需要在原生代码中实现 WeChat SDK 集成
-      return null;
-    } catch (e) {
-      print('Error getting WeChat auth code: $e');
-      return null;
-    }
-  }
-
-  /// 使用微信授权码登录
+  /// 微信登录
   Future<LoginResponse?> loginWithWeChat(String code) async {
     try {
+      if (MockConfig.useMockData) {
+        // Mock 数据模式
+        await _simulateNetworkDelay();
+        return _generateMockLoginResponse('wechat_user_${const Uuid().v4().substring(0, 8)}');
+      }
+
       final response = await _dio.post(
-        '/auth/login-wechat',
+        ApiEndpoints.loginWeChat,
         data: {'code': code},
       );
 
@@ -142,33 +152,29 @@ class AuthService {
         
         await _saveTokens(loginResp.accessToken, loginResp.refreshToken);
         await _saveUser(loginResp.user);
+        _updateTokenExpireTime();
         
+        _logDebug('✅ 微信登录成功');
         return loginResp;
       }
       return null;
     } catch (e) {
-      print('Error logging in with WeChat: $e');
-      return null;
+      _logDebug('❌ 微信登录失败: $e');
+      rethrow;
     }
   }
 
-  /// 获取支付宝授权码
-  Future<String?> getAlipayAuthCode() async {
-    try {
-      print('获取支付宝授权码...');
-      // TODO: 需要在原生代码中实现 Alipay SDK 集成
-      return null;
-    } catch (e) {
-      print('Error getting Alipay auth code: $e');
-      return null;
-    }
-  }
-
-  /// 使用支付宝授权码登录
+  /// 支付宝登录
   Future<LoginResponse?> loginWithAlipay(String code) async {
     try {
+      if (MockConfig.useMockData) {
+        // Mock 数据模式
+        await _simulateNetworkDelay();
+        return _generateMockLoginResponse('alipay_user_${const Uuid().v4().substring(0, 8)}');
+      }
+
       final response = await _dio.post(
-        '/auth/login-alipay',
+        ApiEndpoints.loginAlipay,
         data: {'code': code},
       );
 
@@ -177,13 +183,15 @@ class AuthService {
         
         await _saveTokens(loginResp.accessToken, loginResp.refreshToken);
         await _saveUser(loginResp.user);
+        _updateTokenExpireTime();
         
+        _logDebug('✅ 支付宝登录成功');
         return loginResp;
       }
       return null;
     } catch (e) {
-      print('Error logging in with Alipay: $e');
-      return null;
+      _logDebug('❌ 支付宝登录失败: $e');
+      rethrow;
     }
   }
 
@@ -195,6 +203,65 @@ class AuthService {
   /// 获取 Refresh Token
   Future<String?> getRefreshToken() async {
     return await _secureStorage.read(key: 'refreshToken');
+  }
+
+  /// Token 是否需要刷新
+  bool _isTokenNeedRefresh() {
+    if (_tokenExpireTime == null) return false;
+    final now = DateTime.now();
+    final refreshThreshold = Duration(minutes: AppConfig.tokenRefreshBeforeMinutes);
+    return _tokenExpireTime!.difference(now) < refreshThreshold;
+  }
+
+  /// 刷新 Token
+  Future<bool> refreshToken() async {
+    try {
+      final refreshToken = await getRefreshToken();
+      if (refreshToken == null) return false;
+
+      if (MockConfig.useMockData) {
+        // Mock 数据模式
+        await _simulateNetworkDelay();
+        final newAccessToken = _generateMockToken();
+        final newRefreshToken = _generateMockToken();
+        await _saveTokens(newAccessToken, newRefreshToken);
+        _updateTokenExpireTime();
+        _logDebug('✅ Token 刷新成功（Mock）');
+        return true;
+      }
+
+      final response = await _dio.post(
+        ApiEndpoints.refreshToken,
+        data: {'refreshToken': refreshToken},
+      );
+
+      if (response.statusCode == 200) {
+        final newAccessToken = response.data['accessToken'] as String;
+        final newRefreshToken = response.data['refreshToken'] as String;
+        
+        await _saveTokens(newAccessToken, newRefreshToken);
+        _updateTokenExpireTime();
+        _logDebug('✅ Token 刷新成功');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      _logDebug('❌ Token 刷新失败: $e');
+      return false;
+    }
+  }
+
+  /// 获取当前用户信息
+  Future<User?> getCurrentUser() async {
+    final userJson = await _secureStorage.read(key: 'user');
+    if (userJson != null) {
+      try {
+        return User.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
+      } catch (e) {
+        _logDebug('❌ 解析用户信息失败: $e');
+      }
+    }
+    return null;
   }
 
   /// 保存 Token
@@ -226,82 +293,71 @@ class AuthService {
     );
   }
 
-  /// 获取当前用户信息
-  Future<User?> getCurrentUser() async {
-    final userJson = await _secureStorage.read(key: 'user');
-    if (userJson != null) {
-      try {
-        return User.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
-      } catch (e) {
-        print('Error parsing user: $e');
-      }
-    }
-    return null;
-  }
-  
-  /// User 的 fromJson 方法
-  static User _userFromJson(Map<String, dynamic> json) {
-    return User(
-      userId: json['userId'] as String,
-      phone: json['phone'] as String?,
-      wechatId: json['wechatId'] as String?,
-      alipayId: json['alipayId'] as String?,
-      nickname: json['nickname'] as String?,
-      avatar: json['avatar'] as String?,
-      isAuthenticated: json['isAuthenticated'] as bool? ?? false,
-      isPaidUser: json['isPaidUser'] as bool? ?? false,
-      createdAt: json['createdAt'] != null
-        ? DateTime.parse(json['createdAt'] as String)
-        : null,
-      lastLoginAt: json['lastLoginAt'] != null
-        ? DateTime.parse(json['lastLoginAt'] as String)
-        : null,
-    );
-  }
-
-  /// 刷新 Token
-  Future<bool> refreshToken() async {
-    try {
-      final refreshToken = await getRefreshToken();
-      if (refreshToken == null) return false;
-
-      final response = await _dio.post(
-        '/auth/refresh-token',
-        data: {'refreshToken': refreshToken},
-      );
-
-      if (response.statusCode == 200) {
-        final newAccessToken = response.data['accessToken'] as String;
-        final newRefreshToken = response.data['refreshToken'] as String;
-        
-        await _saveTokens(newAccessToken, newRefreshToken);
-        return true;
-      }
-      return false;
-    } catch (e) {
-      print('Error refreshing token: $e');
-      return false;
-    }
-  }
-
   /// 登出
   Future<void> logout() async {
     try {
-      await _dio.post('/auth/logout');
+      if (!MockConfig.useMockData) {
+        await _dio.post(ApiEndpoints.logout);
+      }
     } catch (e) {
-      print('Error logging out: $e');
+      _logDebug('❌ 登出请求失败: $e');
     } finally {
       await Future.wait([
         _secureStorage.delete(key: 'accessToken'),
         _secureStorage.delete(key: 'refreshToken'),
         _secureStorage.delete(key: 'user'),
       ]);
+      _tokenExpireTime = null;
+      _logDebug('✅ 已登出');
     }
   }
 
-  /// 验证手机号格式（中国）
-  bool _isValidPhone(String phone) {
-    final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
-    return cleanPhone.length == 11 && cleanPhone.startsWith('1');
+  // ===== Mock 数据生成方法 =====
+
+  /// 更新 Token 过期时间
+  void _updateTokenExpireTime() {
+    _tokenExpireTime = DateTime.now().add(
+      Duration(hours: AppConfig.tokenExpirationHours),
+    );
+  }
+
+  /// 生成 Mock Token
+  String _generateMockToken() {
+    return 'mock_token_${const Uuid().v4()}';
+  }
+
+  /// 生成 Mock 登录响应
+  LoginResponse _generateMockLoginResponse(String userId, {String? nickname}) {
+    final now = DateTime.now();
+    final user = User(
+      userId: userId,
+      phone: '$userId@example.com',
+      nickname: nickname ?? 'Test User',
+      avatar: 'https://via.placeholder.com/150',
+      isAuthenticated: true,
+      isPaidUser: false,
+      createdAt: now,
+      lastLoginAt: now,
+    );
+
+    return LoginResponse(
+      accessToken: _generateMockToken(),
+      refreshToken: _generateMockToken(),
+      user: user,
+    );
+  }
+
+  /// 模拟网络延迟
+  Future<void> _simulateNetworkDelay() async {
+    await Future.delayed(
+      Duration(milliseconds: MockConfig.mockNetworkDelay),
+    );
+  }
+
+  /// Debug 日志输出
+  void _logDebug(String message) {
+    if (MockConfig.enableDebugLogging) {
+      print('[AuthService] $message');
+    }
   }
 }

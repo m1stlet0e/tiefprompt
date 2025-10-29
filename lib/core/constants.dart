@@ -149,3 +149,63 @@ const kFreeFeatures = [
 
 /// 专业版产品 ID（用于应用内购买）
 const kProId = "io.github.tiefseetauchner.promptify.pro";
+
+/// API 端点常量
+abstract class ApiEndpoints {
+  /// 基础 URL - 可在此切换本地/云端服务
+  /// 开发环境：http://localhost:5000
+  /// 生产环境：https://api.example.com
+  static const String baseUrl = 'http://localhost:5000/api';
+
+  // ===== 认证端点 =====
+  static const String loginPhone = '/auth/login-phone';
+  static const String registerPhone = '/auth/register-phone';
+  static const String refreshToken = '/auth/refresh-token';
+  static const String logout = '/auth/logout';
+  static const String loginWeChat = '/auth/login-wechat';
+  static const String loginAlipay = '/auth/login-alipay';
+
+  // ===== 支付端点 =====
+  static const String createOrder = '/payment/create-order';
+  static const String queryOrder = '/payment/order';
+  static const String confirmPayment = '/payment/confirm';
+
+  // ===== 用户端点 =====
+  static const String getUserProfile = '/user/profile';
+  static const String updateUserProfile = '/user/profile';
+  static const String getUserScripts = '/user/scripts';
+  static const String deleteScript = '/user/scripts';
+}
+
+/// 应用配置
+abstract class AppConfig {
+  /// Token 过期时间（单位：小时）
+  static const int tokenExpirationHours = 24;
+  
+  /// Token 刷新提前时间（单位：分钟）
+  /// 当 Token 还剩 5 分钟过期时自动刷新
+  static const int tokenRefreshBeforeMinutes = 5;
+  
+  /// HTTP 请求超时时间（单位：秒）
+  static const int httpTimeoutSeconds = 30;
+  
+  /// 微信 App ID（开发时先用 Mock，后续替换）
+  static const String wechatAppId = 'WECHAT_APP_ID_PLACEHOLDER';
+  
+  /// 支付宝 App ID（开发时先用 Mock，后续替换）
+  static const String alipayAppId = 'ALIPAY_APP_ID_PLACEHOLDER';
+}
+
+/// Mock 数据配置
+abstract class MockConfig {
+  /// 是否使用 Mock 数据
+  /// 在真实后端没有准备好前，设置为 true
+  static const bool useMockData = true;
+  
+  /// Mock 网络延迟（单位：毫秒）
+  /// 模拟真实网络环境的延迟
+  static const int mockNetworkDelay = 500;
+  
+  /// 是否打印 Debug 日志
+  static const bool enableDebugLogging = true;
+}
