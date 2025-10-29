@@ -148,4 +148,4 @@ const kFreeFeatures = [
 // ==================== 应用内购买 ====================
 
 /// 专业版产品 ID（用于应用内购买）
-const kProId = "io.github.tiefseetauchner.tiefprompt.pro";
+const kProId = "io.github.tiefseetauchner.promptify.pro";

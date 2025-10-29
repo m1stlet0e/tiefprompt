@@ -15,6 +15,6 @@
 	<key>com.apple.security.files.user-selected.read-only</key>
 	<true/>
 	<key>com.apple.application-identifier</key>
-	<string>RJD48MM8G9.io.github.tiefseetauchner.tiefprompt</string>
+	<string>RJD48MM8G9.io.github.tiefseetauchner.promptify</string>
 </dict>
 </plist>

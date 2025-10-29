@@ -104,7 +104,7 @@ flutter_launcher_icons:
 msix_config:
   display_name: Promptify
   publisher_display_name: Tiefseetauchner
-  identity_name: io.github.tiefseetauchner.tiefprompt
+  identity_name: io.github.tiefseetauchner.promptify
   msix_version: 1.0.0.0
   logo_path: assets/images/icon_bg_round.png
 

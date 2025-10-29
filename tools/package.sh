@@ -3,8 +3,8 @@
 REPO_DIR=$(dirname "$0")/..
 KEY_STORE=$REPO_DIR/keys/
 PACKAGE_DIR=$REPO_DIR/package/
-DOCKER_IMAGE="tiefseetauchner/tiefprompt-build:latest"
-CONTAINER_NAME="tiefprompt_build_container"
+DOCKER_IMAGE="tiefseetauchner/promptify-build:latest"
+CONTAINER_NAME="promptify_build_container"
 TARGETS="androidaab,androidapk"
 FREEDOM="foss,freemium"
 

@@ -4,4 +4,4 @@ targets:
       drift_dev:
         options:
           databases:
-            tiefprompt: lib/models/database.dart
+            promptify: lib/models/database.dart

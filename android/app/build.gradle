@@ -12,7 +12,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "io.github.tiefseetauchner.tiefprompt"
+    namespace = "io.github.tiefseetauchner.promptify"
     compileSdk = flutter.compileSdkVersion
 
     compileOptions {
@@ -25,7 +25,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "io.github.tiefseetauchner.tiefprompt"
+        applicationId = "io.github.tiefseetauchner.promptify"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

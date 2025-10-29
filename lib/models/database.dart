@@ -27,7 +27,7 @@ class AppDatabase extends _$AppDatabase {
   /// 返回：QueryExecutor - 数据库执行器
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: 'tiefprompt', // 数据库文件名
+      name: 'promptify', // 数据库文件名
       native: const DriftNativeOptions(
         // 数据库文件存储路径（应用支持目录）
         databaseDirectory: getApplicationSupportDirectory,
