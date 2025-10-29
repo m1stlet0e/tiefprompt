@@ -50,10 +50,10 @@ class CurrentUserNotifier extends StateNotifier<AsyncValue<User?>> {
   }
 
   /// 使用手机号登录
-  Future<void> loginWithPhone(String phone, String smsCode) async {
+  Future<void> loginWithPhone(String phone, String password) async {
     state = const AsyncValue.loading();
     try {
-      final response = await _authService.loginWithPhone(phone, smsCode);
+      final response = await _authService.loginWithPhone(phone, password);
       if (response != null) {
         state = AsyncValue.data(response.user);
       } else {
@@ -65,10 +65,10 @@ class CurrentUserNotifier extends StateNotifier<AsyncValue<User?>> {
   }
 
   /// 使用手机号注册
-  Future<void> registerWithPhone(String phone, String smsCode, String? nickname) async {
+  Future<void> registerWithPhone(String phone, String password, String? nickname) async {
     state = const AsyncValue.loading();
     try {
-      final response = await _authService.registerWithPhone(phone, smsCode, nickname);
+      final response = await _authService.registerWithPhone(phone, password, nickname);
       if (response != null) {
         state = AsyncValue.data(response.user);
       } else {

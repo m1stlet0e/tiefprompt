@@ -60,14 +60,14 @@ class AuthService {
     }
   }
 
-  /// 手机号 + 短信码登录
-  Future<LoginResponse?> loginWithPhone(String phone, String smsCode) async {
+  /// 手机号 + 密码登录
+  Future<LoginResponse?> loginWithPhone(String phone, String password) async {
     try {
       final response = await _dio.post(
         '/auth/login-phone',
         data: {
           'phone': phone,
-          'smsCode': smsCode,
+          'password': password,
         },
       );
 
@@ -89,7 +89,7 @@ class AuthService {
   /// 手机号注册
   Future<LoginResponse?> registerWithPhone(
     String phone,
-    String smsCode,
+    String password,
     String? nickname,
   ) async {
     try {
@@ -97,7 +97,7 @@ class AuthService {
         '/auth/register-phone',
         data: {
           'phone': phone,
-          'smsCode': smsCode,
+          'password': password,
           'nickname': nickname ?? 'User_${const Uuid().v4().substring(0, 8)}',
         },
       );

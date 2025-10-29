@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:promptify/providers/auth_provider.dart';
 
-/// 登录屏幕
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -11,359 +9,610 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  late TextEditingController _phoneController;
-  late TextEditingController _smsController;
-  int _smsCountdown = 0;
+class _LoginScreenState extends ConsumerState<LoginScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  late TextEditingController _loginPhoneController;
+  late TextEditingController _loginPasswordController;
+  late TextEditingController _registerPhoneController;
+  late TextEditingController _registerPasswordController;
+  late TextEditingController _registerNicknameController;
+
+  bool _loginPasswordVisible = false;
+  bool _registerPasswordVisible = false;
   bool _isLoggingIn = false;
+  bool _isRegistering = false;
 
   @override
   void initState() {
     super.initState();
-    _phoneController = TextEditingController();
-    _smsController = TextEditingController();
+    _tabController = TabController(length: 2, vsync: this);
+    _loginPhoneController = TextEditingController();
+    _loginPasswordController = TextEditingController();
+    _registerPhoneController = TextEditingController();
+    _registerPasswordController = TextEditingController();
+    _registerNicknameController = TextEditingController();
   }
 
-  Future<void> _sendSmsCode() async {
-    final phone = _phoneController.text;
-    
-    if (phone.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('请输入手机号')),
-      );
-      return;
-    }
-
-    setState(() => _isLoggingIn = true);
-
-    final authService = ref.read(authServiceProvider);
-    final success = await authService.sendSmsCode(phone);
-
-    if (success) {
-      setState(() => _smsCountdown = 60);
-      _startCountdown();
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('验证码已发送')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('发送失败，请重试')),
-      );
-    }
-
-    setState(() => _isLoggingIn = false);
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _loginPhoneController.dispose();
+    _loginPasswordController.dispose();
+    _registerPhoneController.dispose();
+    _registerPasswordController.dispose();
+    _registerNicknameController.dispose();
+    super.dispose();
   }
 
-  void _startCountdown() {
-    Future.delayed(const Duration(seconds: 1), () {
-      if (_smsCountdown > 0 && mounted) {
-        setState(() => _smsCountdown--);
-        _startCountdown();
-      }
-    });
-  }
+  Future<void> _handleLogin() async {
+    final phone = _loginPhoneController.text.trim();
+    final password = _loginPasswordController.text;
 
-  Future<void> _loginWithPhone() async {
-    final phone = _phoneController.text;
-    final smsCode = _smsController.text;
-
-    if (phone.isEmpty || smsCode.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('请填写手机号和验证码')),
-      );
+    if (phone.isEmpty || password.isEmpty) {
+      _showSnackBar('请输入手机号和密码');
       return;
     }
 
     setState(() => _isLoggingIn = true);
 
     try {
-      await ref.read(currentUserProvider.notifier).loginWithPhone(phone, smsCode);
-      
+      await ref
+          .read(currentUserProvider.notifier)
+          .loginWithPhone(phone, password);
+
       if (mounted) {
         Navigator.pop(context);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('登录失败: $e')),
-      );
+      _showSnackBar('登录失败: $e');
     } finally {
       setState(() => _isLoggingIn = false);
     }
   }
 
-  Future<void> _loginWithWeChat() async {
+  Future<void> _handleRegister() async {
+    final phone = _registerPhoneController.text.trim();
+    final password = _registerPasswordController.text;
+    final nickname = _registerNicknameController.text.trim();
+
+    if (phone.isEmpty || password.isEmpty) {
+      _showSnackBar('请输入手机号和密码');
+      return;
+    }
+
+    setState(() => _isRegistering = true);
+
+    try {
+      await ref
+          .read(currentUserProvider.notifier)
+          .registerWithPhone(phone, password, nickname.isEmpty ? null : nickname);
+
+      if (mounted) {
+        _showSnackBar('注册成功');
+        _tabController.animateTo(0);
+        _loginPhoneController.text = phone;
+        _loginPasswordController.text = password;
+      }
+    } catch (e) {
+      _showSnackBar('注册失败: $e');
+    } finally {
+      setState(() => _isRegistering = false);
+    }
+  }
+
+  Future<void> _handleWechatLogin() async {
     try {
       await ref.read(currentUserProvider.notifier).loginWithWeChat();
-      
+
       if (mounted) {
         Navigator.pop(context);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('微信登录失败: $e')),
-      );
+      _showSnackBar('微信登录失败: $e');
     }
   }
 
-  Future<void> _loginWithAlipay() async {
+  Future<void> _handleAlipayLogin() async {
     try {
       await ref.read(currentUserProvider.notifier).loginWithAlipay();
-      
+
       if (mounted) {
         Navigator.pop(context);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('支付宝登录失败: $e')),
-      );
+      _showSnackBar('支付宝登录失败: $e');
     }
   }
 
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    _smsController.dispose();
-    super.dispose();
+  void _showSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final primaryColor = theme.primaryColor;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('登录 / 注册'),
-        centerTitle: true,
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            children: [
-              /// 标题部分 (紧凑版)
-              Text(
-                '快速登录',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+        child: Column(
+          children: [
+            // 顶部标签栏
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey[300]!,
+                    width: 1,
+                  ),
                 ),
               ),
-              
-              SizedBox(height: 4),
-              
-              Text(
-                '享受无缝提词体验',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.grey,
+              child: TabBar(
+                controller: _tabController,
+                indicatorColor: primaryColor,
+                indicatorWeight: 3,
+                labelColor: primaryColor,
+                unselectedLabelColor: Colors.grey[600],
+                labelStyle: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
-              ),
-              
-              SizedBox(height: 20),
-              
-              /// 手机号登录部分 (上面)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '手机号快速登录',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  
-                  SizedBox(height: 10),
-                  
-                  InternationalPhoneNumberInput(
-                    onInputChanged: (PhoneNumber value) {
-                      _phoneController.text = value.phoneNumber ?? '';
-                    },
-                    selectorConfig: SelectorConfig(
-                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                      leadingPadding: 8,
-                    ),
-                    initialValue: PhoneNumber(isoCode: 'CN'),
-                    textFieldController: _phoneController,
-                    formatInput: true,
-                    inputBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    countries: ['CN'],
-                  ),
-                  
-                  SizedBox(height: 8),
-                  
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _smsController,
-                          decoration: InputDecoration(
-                            hintText: '验证码',
-                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
-                          maxLength: 6,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      SizedBox(
-                        width: 100,
-                        child: ElevatedButton(
-                          onPressed: _smsCountdown > 0 ? null : _sendSmsCode,
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Text(
-                            _smsCountdown > 0 ? '${_smsCountdown}s' : '获取验证码',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  
-                  SizedBox(height: 10),
-                  
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      onPressed: _isLoggingIn ? null : _loginWithPhone,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: _isLoggingIn
-                        ? SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation(Colors.white),
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Text('登录', style: TextStyle(color: Colors.white, fontSize: 14)),
-                    ),
-                  ),
-                ],
-              ),
-              
-              SizedBox(height: 16),
-              
-              /// 分割线
-              Row(
-                children: [
-                  Expanded(child: Divider()),
+                unselectedLabelStyle: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text('或', style: TextStyle(color: Colors.grey)),
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text('登录'),
                   ),
-                  Expanded(child: Divider()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text('注册'),
+                  ),
                 ],
               ),
-              
-              SizedBox(height: 12),
-              
-              /// 微信和支付宝登录 (下面)
-              Text(
-                '其他登录方式',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              
-              SizedBox(height: 10),
-              
-              Row(
+            ),
+            // 内容区域
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
                 children: [
-                  Expanded(
-                    child: _buildCompactSocialButton(
-                      icon: '微',
-                      label: '微信',
-                      onPressed: _loginWithWeChat,
-                      backgroundColor: Color(0xFF09B83E),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: _buildCompactSocialButton(
-                      icon: '支',
-                      label: '支付宝',
-                      onPressed: _loginWithAlipay,
-                      backgroundColor: Color(0xFF1890FF),
-                    ),
-                  ),
+                  // 登录标签页
+                  _buildLoginTab(theme, primaryColor),
+                  // 注册标签页
+                  _buildRegisterTab(theme, primaryColor),
                 ],
               ),
-              
-              SizedBox(height: 12),
-              
-              /// 底部提示
-              Text(
-                '登录即表示同意用户协议和隐私政策',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 11,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginTab(ThemeData theme, Color primaryColor) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 欢迎文本
+          Text(
+            '您好，\n欢迎来到灵感分享！',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              height: 1.4,
+            ),
+          ),
+          SizedBox(height: 24),
+
+          // 手机号输入框
+          _buildTextField(
+            label: '输入手机号/用户名/邮箱',
+            controller: _loginPhoneController,
+            keyboardType: TextInputType.text,
+            enabled: !_isLoggingIn,
+          ),
+          SizedBox(height: 12),
+
+          // 密码输入框
+          _buildTextField(
+            label: '输入密码',
+            controller: _loginPasswordController,
+            obscureText: !_loginPasswordVisible,
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() => _loginPasswordVisible = !_loginPasswordVisible);
+              },
+              child: Icon(
+                _loginPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: Colors.grey,
+                size: 20,
+              ),
+            ),
+            enabled: !_isLoggingIn,
+          ),
+          SizedBox(height: 8),
+
+          // 忘记密码和免密码登录
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: _isLoggingIn ? null : () {},
+                child: Text(
+                  '忘记密码',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                textAlign: TextAlign.center,
+              ),
+              GestureDetector(
+                onTap: _isLoggingIn ? null : () {},
+                child: Text(
+                  '免密码登录',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ],
+          ),
+          SizedBox(height: 20),
+
+          // 登录按钮
+          _buildGradientButton(
+            label: '登录',
+            onPressed: _isLoggingIn ? null : _handleLogin,
+            isLoading: _isLoggingIn,
+            primaryColor: primaryColor,
+          ),
+          SizedBox(height: 20),
+
+          // 分割线
+          Row(
+            children: [
+              Expanded(child: Divider(color: Colors.grey[300])),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  '第三方账号登录',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              Expanded(child: Divider(color: Colors.grey[300])),
+            ],
+          ),
+          SizedBox(height: 20),
+
+          // 社交登录按钮
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSocialIconButton(
+                icon: Icons.chat,
+                backgroundColor: Color(0xFF09B83E),
+                onPressed: _handleWechatLogin,
+              ),
+              SizedBox(width: 24),
+              _buildSocialIconButton(
+                icon: Icons.payment,
+                backgroundColor: Color(0xFF1890FF),
+                onPressed: _handleAlipayLogin,
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+
+          // 底部提示
+          Center(
+            child: Text(
+              '登录即表示同意用户服务协议',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 11,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRegisterTab(ThemeData theme, Color primaryColor) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 欢迎文本
+          Text(
+            '登录',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 24),
+
+          // 手机号输入框
+          _buildTextField(
+            label: '输入手机号/用户名/邮箱',
+            controller: _registerPhoneController,
+            keyboardType: TextInputType.text,
+            enabled: !_isRegistering,
+          ),
+          SizedBox(height: 12),
+
+          // 密码输入框
+          _buildTextField(
+            label: '输入密码',
+            controller: _registerPasswordController,
+            obscureText: !_registerPasswordVisible,
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(
+                    () => _registerPasswordVisible = !_registerPasswordVisible);
+              },
+              child: Icon(
+                _registerPasswordVisible
+                    ? Icons.visibility
+                    : Icons.visibility_off,
+                color: Colors.grey,
+                size: 20,
+              ),
+            ),
+            enabled: !_isRegistering,
+          ),
+          SizedBox(height: 12),
+
+          // 昵称输入框（可选）
+          _buildTextField(
+            label: '输入昵称（可选）',
+            controller: _registerNicknameController,
+            enabled: !_isRegistering,
+          ),
+          SizedBox(height: 8),
+
+          // 忘记密码和免密码登录
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: _isRegistering ? null : () {},
+                child: Text(
+                  '忘记密码',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: _isRegistering ? null : () {},
+                child: Text(
+                  '免密码登录',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+
+          // 登录按钮
+          _buildGradientButton(
+            label: '登录',
+            onPressed: _isRegistering ? null : _handleRegister,
+            isLoading: _isRegistering,
+            primaryColor: primaryColor,
+          ),
+          SizedBox(height: 20),
+
+          // 分割线
+          Row(
+            children: [
+              Expanded(child: Divider(color: Colors.grey[300])),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  '第三方账号登录',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              Expanded(child: Divider(color: Colors.grey[300])),
+            ],
+          ),
+          SizedBox(height: 20),
+
+          // 社交登录按钮
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSocialIconButton(
+                icon: Icons.chat,
+                backgroundColor: Color(0xFF09B83E),
+                onPressed: _handleWechatLogin,
+              ),
+              SizedBox(width: 24),
+              _buildSocialIconButton(
+                icon: Icons.payment,
+                backgroundColor: Color(0xFF1890FF),
+                onPressed: _handleAlipayLogin,
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+
+          // 底部提示
+          Center(
+            child: Text(
+              '登录即表示同意用户服务协议',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 11,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+    Widget? suffixIcon,
+    bool enabled = true,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      enabled: enabled,
+      decoration: InputDecoration(
+        hintText: label,
+        hintStyle: TextStyle(
+          color: Colors.grey[400],
+          fontSize: 14,
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        suffixIcon: suffixIcon != null ? Padding(
+          padding: EdgeInsets.only(right: 12),
+          child: suffixIcon,
+        ) : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 1.5,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGradientButton({
+    required String label,
+    required VoidCallback? onPressed,
+    required bool isLoading,
+    required Color primaryColor,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 48,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            primaryColor,
+            primaryColor.withAlpha(220),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withAlpha(102),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(24),
+          child: Center(
+            child: isLoading
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                : Text(
+                    label,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ),
       ),
     );
   }
 
-  /// 紧凑版社交登录按钮
-  Widget _buildCompactSocialButton({
-    required String icon,
-    required String label,
-    required VoidCallback onPressed,
+  Widget _buildSocialIconButton({
+    required IconData icon,
     required Color backgroundColor,
+    required VoidCallback onPressed,
   }) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        minimumSize: Size.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(
-              child: Text(
-                icon,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 12),
-              overflow: TextOverflow.ellipsis,
-            ),
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: backgroundColor.withAlpha(102),
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(16),
+          child: Center(
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
+        ),
       ),
     );
   }
